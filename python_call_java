@@ -1,0 +1,271 @@
+
+http://www.hankcs.com/nlp/python-calls-hanlp.html
+Python调用自然语言处理包HanLP
+
+上次介绍了CSharp调用HanLP后，@阳志平 同学又问我Python的调用方法，于是写了此文档。在万能的Python面前，用JPype调个jar包是非常简单的，且无缝支持Python2.x/3.x + 32/64位 Windows/*nix。
+
+Python调用自然语言处理包HanLP3.png
+
+安装JDK
+
+JPype并没有像IKVM那样实现自己的JVM，而是以pipe方式调用原生JVM。所以我们需要一个JVM，比如：
+
+Oracle JDK
+
+OpenJDK
+
+安装JDK非常简单，分清楚32位和64位即可，必须与OS和Python的位数一致，具体安装过程不再赘述。
+
+唯一需要注意的是，必须设置环境变量JAVA_HOME到JDK的根目录，JDK的安装程序不一定会帮你做这一步。
+
+安装编译工具链
+
+Python的package一般是以源码形式发布的，其中一些C代码必须在用户机器上编译，所以需要安装编译工具链。当然你也可以跳过这步，直接下载binary。
+
+Windows
+
+安装免费的Visual C++ Express 2010。
+
+Debian/Ubuntu
+
+sudo apt-get install g++
+Red Hat/Fedora
+
+su -c 'yum install gcc-c++'
+安装JPype
+
+本文读者应该都是Python程序员，所以略过了安装Python这一步。不过必须注意的是，JPype版本与Python的对应兼容关系：
+
+Python2.x：JPype
+
+Python3.x:JPype1-py3
+
+使用setup.py安装
+
+下载源码后解压，在目录下运行：
+
+*nix
+
+sudo python3 setup.py install
+Windows
+
+python setup.py install
+直接下载binary
+
+当然你也可以选择下载binary，比如JPype1-py3主页上的binary列表。
+
+jpype.png
+
+在Pycharm中安装
+
+如果你正在使用Pycharm这款IDE的话，那么事情就简单多了。
+
+首先在Project Interpreter里面点击加号：
+
+Python调用自然语言处理包HanLP2.png
+
+搜索JPype，选择你需要的版本安装:
+
+Python调用自然语言处理包HanLP4.png
+
+稍等片刻就安装成功了：
+
+Python调用自然语言处理包HanLP5.png
+
+测试安装结果
+
+终于又到了写代码的开心时间了，可以通过如下代码测试是否安装成功：
+
+from jpype import *
+startJVM(getDefaultJVMPath())
+java.lang.System.out.println("hello world")
+shutdownJVM()
+输出如下结果表示安装成功：
+
+hello world
+JVM activity report     :
+	classes loaded       : 31
+JVM has been shutdown
+调用HanLP
+
+关于HanLP
+
+HanLP是一个致力于向生产环境普及NLP技术的开源Java工具包，支持中文分词（N-最短路分词、CRF分词、索引分词、用户自定义词典、词性标注），命名实体识别（中国人名、音译人名、日本人名、地名、实体机构名识别），关键词提取，自动摘要，短语提取，拼音转换，简繁转换，文本推荐，依存句法分析（MaxEnt依存句法分析、神经网络依存句法分析）。
+
+下载HanLP
+
+你可以直接下载Portable版的jar，零配置。
+
+也可以使用自定义的HanLP——HanLP由3部分组成：类库hanlp.jar包、模型data包、配置文件hanlp.properties，请前往项目主页下载最新版：https://github.com/hankcs/HanLP/releases。对于非portable版，下载后，你需要编辑配置文件第一行的root指向data的父目录，详见文档。
+
+这里，假设新建了一个目录（假定为C:\hanlp），把hanlp.jar和hanlp.properties（portable版的话，仅需一个hanlp-portable.jar）放进去：
+
+在CSharp中调用HanLP2.png
+
+Python调用
+
+下面是一份Python3的调用示例：
+
+# -*- coding:utf-8 -*-
+# Filename: main.py
+# Author：hankcs
+# Date: 2015/11/26 14:16
+from jpype import *
+
+startJVM(getDefaultJVMPath(), "-Djava.class.path=C:\hanlp\hanlp-1.2.7.jar;C:\hanlp")
+HanLP = JClass('com.hankcs.hanlp.HanLP')
+# 中文分词
+print(HanLP.segment('你好，欢迎在Python中调用HanLP的API'))
+testCases = [
+    "商品和服务",
+    "结婚的和尚未结婚的确实在干扰分词啊",
+    "买水果然后来世博园最后去世博会",
+    "中国的首都是北京",
+    "欢迎新老师生前来就餐",
+    "工信处女干事每月经过下属科室都要亲口交代24口交换机等技术性器件的安装工作",
+    "随着页游兴起到现在的页游繁盛，依赖于存档进行逻辑判断的设计减少了，但这块也不能完全忽略掉。"]
+for sentence in testCases: print(HanLP.segment(sentence))
+# 命名实体识别与词性标注
+NLPTokenizer = JClass('com.hankcs.hanlp.tokenizer.NLPTokenizer')
+print(NLPTokenizer.segment('中国科学院计算技术研究所的宗成庆教授正在教授自然语言处理课程'))
+# 关键词提取
+document = "水利部水资源司司长陈明忠9月29日在国务院新闻办举行的新闻发布会上透露，" \
+           "根据刚刚完成了水资源管理制度的考核，有部分省接近了红线的指标，" \
+           "有部分省超过红线的指标。对一些超过红线的地方，陈明忠表示，对一些取用水项目进行区域的限批，" \
+           "严格地进行水资源论证和取水许可的批准。"
+print(HanLP.extractKeyword(document, 2))
+# 自动摘要
+print(HanLP.extractSummary(document, 3))
+# 依存句法分析
+print(HanLP.parseDependency("徐先生还具体帮助他确定了把画雄鹰、松鼠和麻雀作为主攻目标。"))
+shutdownJVM()
+输出
+
+[你好/vl, ，/w, 欢迎/v, 在/p, Python/nx, 中/f, 调用/v, HanLP/nx, 的/ude1, API/nx]
+[商品/n, 和/cc, 服务/vn]
+[结婚/vi, 的/ude1, 和/cc, 尚未/d, 结婚/vi, 的/ude1, 确实/ad, 在/p, 干扰/vn, 分词/n, 啊/y]
+[买/v, 水果/n, 然后/c, 来/vf, 世博园/n, 最后/f, 去/vf, 世博会/n]
+[中国/ns, 的/ude1, 首都/n, 是/vshi, 北京/ns]
+[欢迎/v, 新/a, 老/a, 师生/n, 前来/vi, 就餐/vi]
+[工信处/nt, 女干事/n, 每月/r, 经过/p, 下属/v, 科室/n, 都/d, 要/v, 亲口/d, 交代/v, 24/m, 口/n, 交换机/n, 等/udeng, 技术性/n, 器件/n, 的/ude1, 安装/v, 工作/vn]
+[随着/p, 页游/nz, 兴起/v, 到/v, 现在/t, 的/ude1, 页游/nz, 繁盛/a, ，/w, 依赖于/v, 存档/vi, 进行/vn, 逻辑/n, 判断/v, 的/ude1, 设计/vn, 减少/v, 了/ule, ，/w, 但/c, 这/rzv, 块/q, 也/d, 不能/v, 完全/ad, 忽略/v, 掉/v, 。/w]
+[中国科学院计算技术研究所/nt, 的/ude1, 宗成庆/nr, 教授/nnt, 正在/d, 教授/v, 自然语言处理/nz, 课程/n]
+[水资源, 陈明忠]
+[水利部水资源司司长陈明忠9月29日在国务院新闻办举行的新闻发布会上透露, 严格地进行水资源论证和取水许可的批准, 有部分省超过红线的指标]
+1	徐先生	徐先生	nh	nr	_	4	主谓关系	_	_
+2	还	还	d	d	_	4	状中结构	_	_
+3	具体	具体	a	a	_	4	状中结构	_	_
+4	帮助	帮助	v	v	_	0	核心关系	_	_
+5	他	他	r	rr	_	4	兼语	_	_
+6	确定	确定	v	v	_	4	动宾关系	_	_
+7	了	了	u	ule	_	6	右附加关系	_	_
+8	把	把	p	pba	_	15	状中结构	_	_
+9	画	画	v	v	_	8	介宾关系	_	_
+10	雄鹰	雄鹰	n	n	_	9	动宾关系	_	_
+11	、	、	wp	w	_	12	标点符号	_	_
+12	松鼠	松鼠	n	n	_	10	并列关系	_	_
+13	和	和	c	cc	_	14	左附加关系	_	_
+14	麻雀	麻雀	n	n	_	10	并列关系	_	_
+15	作为	作为	p	p	_	6	动宾关系	_	_
+16	主攻	主攻	v	v	_	17	定中关系	_	_
+17	目标	目标	n	n	_	15	动宾关系	_	_
+18	。	。	wp	w	_	4	标点符号	_	_
+
+JVM activity report     :
+	classes loaded       : 32
+JVM has been shutdown
+其中，依存句法分析模型不包含在hanlp-portable.jar中，必须下载data后通过hanlp.properties关联，详见项目文档。
+
+你可以使用DependencyViewer进行可视化：
+
+神经网络依存句法分析51.png
+
+对于Python2，可能存在饱受诟病的中文编码问题，但依然能够解决。请参考https://github.com/hankcs/HanLP/issues/101上的解决方案，也可以继续参与讨论。
+
+更多功能
+
+请前往官方主页查看更多API，包括：
+
+中文分词
+
+最短路分词
+
+N-最短路分词
+
+CRF分词
+
+索引分词
+
+极速词典分词
+
+用户自定义词典
+
+词性标注
+
+命名实体识别
+
+中国人名识别
+
+音译人名识别
+
+日本人名识别
+
+地名识别
+
+实体机构名识别
+
+关键词提取
+
+TextRank关键词提取
+
+自动摘要
+
+TextRank自动摘要
+
+短语提取
+
+基于互信息和左右信息熵的短语提取
+
+拼音转换
+
+多音字
+
+声母
+
+韵母
+
+声调
+
+简繁转换
+
+繁体中文分词
+
+简繁分歧词
+
+文本推荐
+
+语义推荐
+
+拼音推荐
+
+字词推荐
+
+依存句法分析
+
+MaxEnt依存句法分析
+
+CRF依存句法分析
+
+语料库工具
+
+分词语料预处理
+
+词频词性词典制作
+
+BiGram统计
+
+词共现统计
+
+CoNLL语料预处理
+
+CoNLL UA/LA/DA评测工具
