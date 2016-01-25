@@ -37,9 +37,9 @@ if __name__ == '__main__':
     file_name = "./result.txt"
     s_list, vocab, word_idx = txt2list(file_name, return_mod=3, is_filter=True)
 
-    feature_size = 1000
+    feature_size = 400
     content_window = 5
-    freq_min_count = 5
+    freq_min_count = 10
     threads_num = 4
 
     print("word2vec...")
