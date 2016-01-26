@@ -7,9 +7,13 @@ import jieba
 import time
 import jieba.posseg as pseg
 import pprint as pp
+import codecs
 # import matplotlib.pyplot as plt
 from svm_sentiment_grocery import txt2list
 from gensim.models import Word2Vec,Phrases
+
+
+auto_brand = codecs.open("Automotive_Brand.txt", encoding='gb2312').read()
 
 
 def get_text_from_tuple(tuple_in):
@@ -20,6 +24,7 @@ def get_text_from_tuple(tuple_in):
     """
     for _, text in tuple_in:
         yield list(jieba.cut(text))
+
 
 
 class MySentences(object):
@@ -57,10 +62,8 @@ if __name__ == '__main__':
         if "quit" in t_word:
             break
         results = model.most_similar([t_word.decode('utf-8').strip('\n').strip('\r').strip(' ')],topn=30)
+        # results = model.most_similar(negative=[u'豪车'],topn=5)
         for t_w, t_sim in results:
-            print(t_w, " ", t_sim)
-
-
-
-
+            if any ([t_w==ab for ab in auto_brand.split(u'\r\n')]):      #过滤品牌
+                print(t_w, " ", t_sim)
 

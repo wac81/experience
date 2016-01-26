@@ -136,6 +136,7 @@ for k in f:
     print k[0].encode('utf-8'),k[1]
 
 
+
 """
     model.most_similar(positive=['woman', 'king'], negative=['man'])
 """
