@@ -104,7 +104,7 @@ feature_size = 100
 content_window = 10
 freq_min_count = 1
 threads_num = 4
-negative = 10   #best
+negative = 2   #best
 iter = 1
 
 def delNOTNeedWords(content,stopwords):

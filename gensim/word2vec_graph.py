@@ -41,8 +41,8 @@ if __name__ == '__main__':
     content_window = 10
     freq_min_count = 3
     threads_num = 4
-    negative = 10   #best采样使用hierarchical softmax方法(负采样，对常见词有利)，不使用negative sampling方法(对罕见词有利)。
-    iter = 1
+    negative = 4   #best采样使用hierarchical softmax方法(负采样，对常见词有利)，不使用negative sampling方法(对罕见词有利)。
+    iter = 10
 
     print("word2vec...")
     tic = time.time()
