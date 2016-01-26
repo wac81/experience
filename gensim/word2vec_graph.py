@@ -9,7 +9,7 @@ import jieba.posseg as pseg
 import pprint as pp
 # import matplotlib.pyplot as plt
 from svm_sentiment_grocery import txt2list
-from gensim.models import Word2Vec
+from gensim.models import Word2Vec,Phrases
 
 
 def get_text_from_tuple(tuple_in):
@@ -38,13 +38,16 @@ if __name__ == '__main__':
     s_list, vocab, word_idx = txt2list(file_name, return_mod=3, is_filter=True)
 
     feature_size = 400
-    content_window = 5
-    freq_min_count = 10
+    content_window = 10
+    freq_min_count = 1
     threads_num = 4
+    negative = 10   #best采样使用hierarchical softmax方法(负采样，对常见词有利)，不使用negative sampling方法(对罕见词有利)。
+    iter = 1
 
     print("word2vec...")
     tic = time.time()
-    model = Word2Vec(s_list, size=feature_size, window=content_window, min_count=freq_min_count, workers=threads_num)
+    bigram_transformer = Phrases(s_list)
+    model = Word2Vec(bigram_transformer[s_list], size=feature_size, window=content_window, min_count=freq_min_count, negative=negative, iter=iter, workers=threads_num)
     toc = time.time()
     print("Word2vec completed! Elapsed time is %s." % (toc-tic))
 
@@ -53,7 +56,7 @@ if __name__ == '__main__':
         t_word = sys.stdin.readline()
         if "quit" in t_word:
             break
-        results = model.most_similar([t_word.decode('utf-8').strip('\n').strip('\r').strip(' ')])
+        results = model.most_similar([t_word.decode('utf-8').strip('\n').strip('\r').strip(' ')],topn=30)
         for t_w, t_sim in results:
             print(t_w, " ", t_sim)
 

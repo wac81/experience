@@ -100,6 +100,12 @@ import codecs
 import jieba.posseg as pseg
 stopwords = codecs.open('stopwords.txt', encoding='UTF-8').read()
 # print stopwords
+feature_size = 100
+content_window = 10
+freq_min_count = 1
+threads_num = 4
+negative = 10   #best
+iter = 1
 
 def delNOTNeedWords(content,stopwords):
     # words = jieba.lcut(content)
@@ -112,7 +118,7 @@ def delNOTNeedWords(content,stopwords):
 
     for word, flag in words:
         # print word.encode('utf-8')
-        if (word not in stopwords and flag not in ["/x","/zg","/uj","/ul","/e","/d","/uz","/y"]): #去停用词和其他词性，比如非名词动词等
+        if (word not in stopwords and flag[0] in [u'n',u'f',u'a',u'z']): #去停用词和其他词性，比如非名词动词等
             result += word.encode('utf-8')  # +"/"+str(w.flag)+" "  #去停用词
     return result
 
@@ -121,10 +127,11 @@ for sentence in sentences:
     sentence = delNOTNeedWords(sentence,stopwords)
     input.append(jieba.lcut(sentence))
 
-model = models.Word2Vec(input, size=100, window=5, min_count=5, workers=4)
+bigram_transformer = models.Phrases(input)
+model = models.Word2Vec(bigram_transformer[input], size=feature_size, window=content_window, min_count=freq_min_count, negative=negative, iter=iter, workers=threads_num)
 # print model.index2word
 model.save(save_filename)
-f = model.most_similar([u'宝马'])
+f = model.most_similar([u'奥迪'])
 for k in f:
     print k[0].encode('utf-8'),k[1]
 
