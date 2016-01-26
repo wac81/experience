@@ -50,12 +50,12 @@ if __name__ == '__main__':
 
 
 
-    feature_size = 400
+    feature_size = 500
     content_window = 10
-    freq_min_count = 3
-    threads_num = 4
-    negative = 4   # best采样使用hierarchical softmax方法(负采样，对常见词有利)，不使用negative sampling方法(对罕见词有利)。
-    t_iter = 10
+    freq_min_count = 4
+    threads_num = 8
+    negative = 6   # best采样使用hierarchical softmax方法(负采样，对常见词有利)，不使用negative sampling方法(对罕见词有利)。
+    t_iter = 60
 
     print("word2vec...")
     tic = time.time()
@@ -64,7 +64,7 @@ if __name__ == '__main__':
         print("Loaded word2vec model")
     else:
         s_list = json_dict_from_file(file_name,"content")
-        model = Word2Vec(s_list, size=feature_size, window=content_window, iter=t_iter, min_count=freq_min_count, workers=threads_num)
+        model = Word2Vec(s_list, size=feature_size, window=content_window, iter=t_iter, min_count=freq_min_count,negative=negative, workers=threads_num)
         toc = time.time()
         print("Word2vec completed! Elapsed time is %s." % (toc-tic))
         model.save(save_model)
@@ -90,7 +90,7 @@ if __name__ == '__main__':
             u'价格',
             u'用途']
     for b in brand:
-        print("============= 请输入想测试的单词（多个单词用空格隔开） ============")
+        print(u"============= 请输入想测试的单词（多个单词用空格隔开） ============")
         pos_word = b
         print("--------"+pos_word+"--------")
         neg_word = []
