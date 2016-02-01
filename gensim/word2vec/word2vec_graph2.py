@@ -21,7 +21,7 @@ def get_text_from_tuple(tuple_in):
     for _, text in tuple_in:
         yield list(jieba.cut(text))
 
-auto_brand = codecs.open("Automotive_Brand.txt", encoding='gb2312').read()
+auto_brand = codecs.open("autotype.txt", encoding='utf-8').read()
 
 class MySentences(object):
     def __init__(self, dirname):
@@ -42,7 +42,7 @@ class MySentences(object):
 
 if __name__ == '__main__':
 
-    file_name = "./autohome.json"
+    file_name = "./koubei_50w.json"
     save_model = "./word2vec.model"
     # s_list, vocab, word_idx = txt2list(file_name, return_mod=3, is_filter=True)
     # s_list, vocab, word_idx = xls2list(file_name, return_mod=3, is_filter=True)
@@ -77,68 +77,71 @@ if __name__ == '__main__':
     """
     品牌维度
     """
-    brand =[u'性能',
-            u'配置',
-            u'操控',
-            u'油耗',
-            u'耗油',
-            u'服务',
-            u'安全',
-            u'舒适',
-            u'品牌',
-            u'外观',
-            u'价格',
-            u'用途']
-    for b in brand:
-        print(u"============= 请输入想测试的单词（多个单词用空格隔开） ============")
-        pos_word = b
-        print("--------"+pos_word+"--------")
+    # brand =[u'性能',
+    #         u'配置',
+    #         u'操控',
+    #         u'油耗',
+    #         u'耗油',
+    #         u'服务',
+    #         u'安全',
+    #         u'舒适',
+    #         u'品牌',
+    #         u'外观',
+    #         u'价格',
+    #         u'用途']
+    # for b in brand:
+    #     print(u"============= 请输入想测试的单词（多个单词用空格隔开） ============")
+    #     pos_word = b
+    #     print("--------"+pos_word+"--------")
+    #     neg_word = []
+    #     num_word = 50
+    #     try:
+    #         results = model.most_similar(pos_word, neg_word, num_word)
+    #     except Exception as e:
+    #         print(e)
+    #         continue
+    #     for t_w, t_sim in results:
+    #         print(t_w, " ", t_sim)
+    """
+    汽车品牌
+    """
+    for b in auto_brand.split(u'\r\n'):
+        print("============= 请输入想测试的单词（多个单词用空格隔开） ============")
+        x = b.replace(u'\ufeff', '').split(u' ')
+        if len(x) > 1:
+            pos_word = x
+        else:
+            pos_word = x[0]
+        print("--------"+b+"--------")
         neg_word = []
-        num_word = 50
+        num_word = 15
         try:
             results = model.most_similar(pos_word, neg_word, num_word)
         except Exception as e:
             print(e)
             continue
         for t_w, t_sim in results:
+            # if any ([t_w==ab for ab in auto_brand.split(u'\n')]):      #过滤品牌
             print(t_w, " ", t_sim)
+
+
     """
-    汽车品牌
+
     """
-    # for b in auto_brand.split(u'\r\n'):
-    #     print("============= 请输入想测试的单词（多个单词用空格隔开） ============")
-    #     pos_word = b
-    #     print("--------"+pos_word+"--------")
-    #     neg_word = []
-    #     num_word = 500
-    #     try:
-    #         results = model.most_similar(pos_word, neg_word, num_word)
-    #     except Exception as e:
-    #         print(e)
-    #         continue
-    #     for t_w, t_sim in results:
-    #         if any ([t_w==ab for ab in auto_brand.split(u'\r\n')]):      #过滤品牌
-    #             print(t_w, " ", t_sim)
-
-    # while 1:
-    #     print("============= 请输入想测试的单词（多个单词用空格隔开） ============")
-    #     print("positive: ", end='\b')
-    #     pos_word = sys.stdin.readline().decode('utf-8').strip('\n').strip('\r').strip(' ').split(' ')
-    #     if "quit" in pos_word:
-    #         break
-    #     neg_word = []
-    #     print("How many words you want to print: ", end='\b')
-    #     num_word = int(sys.stdin.readline().decode('utf-8').strip('\n').strip('\r').strip(' '))
-    #     try:
-    #         results = model.most_similar(pos_word, neg_word, num_word)
-    #     except Exception as e:
-    #         print(e)
-    #         continue
-    #     for t_w, t_sim in results:
-    #         if any ([t_w==ab for ab in auto_brand.split(u'\r\n')]):      #过滤品牌
-    #             print(t_w, " ", t_sim)
-
-
-
-
-
+    while 1:
+        print("============= 请输入想测试的单词（多个单词用空格隔开） ============")
+        print("positive: ", end='\b')
+        pos_word = sys.stdin.readline().decode('utf-8').strip('\n').strip('\r').strip(' ').split(' ')
+        if "quit" in pos_word:
+            break
+        neg_word = []
+        print("How many words you want to print: ", end='\b')
+        num_word = int(sys.stdin.readline().decode('utf-8').strip('\n').strip('\r').strip(' '))
+        try:
+            results = model.most_similar(pos_word, neg_word, num_word)
+        except Exception as e:
+            print(e)
+            continue
+        for t_w, t_sim in results:
+            # if any ([t_w==ab for ab in auto_brand.split(u'\r\n')]):      #过滤品牌
+            print(t_w, " ", t_sim)

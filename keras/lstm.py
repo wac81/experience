@@ -1,3 +1,5 @@
+# -*- coding:utf-8 -*-
+
 '''Example script to generate text from Nietzsche's writings.
 At least 20 epochs are required before the generated text
 starts sounding coherent.
@@ -15,9 +17,12 @@ from keras.datasets.data_utils import get_file
 import numpy as np
 import random
 import sys
+import codecs
+# path = get_file('nietzsche.txt', origin="https://s3.amazonaws.com/text-datasets/nietzsche.txt")
+# text = open(path).read().lower()
 
-path = get_file('nietzsche.txt', origin="https://s3.amazonaws.com/text-datasets/nietzsche.txt")
-text = open(path).read().lower()
+
+text = codecs.open(u"唐诗三百首.txt", encoding='utf-8').read()
 print('corpus length:', len(text))
 
 chars = set(text)
