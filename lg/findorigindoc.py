@@ -8,6 +8,7 @@ import jieba
 import codecs
 import jieba.posseg as pseg
 import json
+import time
 # logging.basicConfig(format=’%(asctime)s:%(levelname)s:%(message)s’,level=logging.INFO)
 
 documents = [
@@ -23,13 +24,13 @@ documents = [
             ]
 
 
-messagefile = './message_repost_gt10.json'   #message文件位置
+messagefile = './message_liuxiaolingtong.json'   #message文件位置
 
-similarity_limit = 0.6   #相似度下限
+similarity_limit = 0.8   #相似度下限
 
-reposts_limit = 2 #转发下限
+reposts_limit = 1 #转发下限
 #input文本
-input = [u'有次看六小龄童的采访，这张照片印象很深。说是拍西游记的时候章先生上了妆，在山上遇到了素不相识的小猴子，小猴子看见比自己体型大这么大的猴王，就敬了个礼。当然猴王也回了一个喽～。然后这照片拿了摄影的国际金奖。太好玩了',u'20797',u'201601281702'],
+input = [u'六小龄童未得到春晚邀请的事情在持续发酵',u'20797',u'201601281702'],
 
 #########################################################
 
@@ -39,7 +40,7 @@ def getjson(filename):
         for l in f:
             d = json.loads(l,encoding='utf-8')
 
-            if "reposts" in d.keys() and d["reposts"]>0:
+            if "reposts" in d.keys() and d["reposts"]>=0:
                 doc.append(d)
 
         return doc
@@ -91,9 +92,25 @@ print (sort_sims)
 # print (documents[sort_sims[0][0]])
 
 output = []
+count = 0
+oldtime = 0
+counts = []
 for d in sort_sims:
-    if (d[1]>=similarity_limit and documents[0]["reposts"]>=reposts_limit):
+    # if documents[d[0]]["reposts"]>=reposts_limit:
+    #     print d[1],documents[0]["reposts"]
+    date = documents[d[0]]["tC"]["$date"]
+    date = date[:-5].replace(u'T',u' ')
+    tempdate = time.mktime(time.strptime(date,'%Y-%m-%d %H:%M:%S'))
+    time = int(tempdate/10000000)
+    count = count + 1
+    if oldtime!=time:
+        counts.append(float(count))
+        count = 0
+        oldtime = time
+
+    if (d[1]>=similarity_limit and documents[d[0]]["reposts"]>=reposts_limit):
         output.append(documents[d[0]])
+
 
 
 # output_date = output.sort(lambda a,b:a[2]-b[2])
@@ -101,8 +118,33 @@ for d in sort_sims:
 output_date = sorted(output,key=lambda x:x["tC"]["$date"])
 # except TypeError:
 #     print TypeError
-
+x_reposts = []
+x_date = []
 for item in output_date:
     print(item["content"].encode("utf-8")+" "+ str(item["reposts"])+" "+item["tC"]["$date"].encode("utf-8"))
+    x_reposts.append(float(item["reposts"]))
+    x_date.append(item["tC"]["$date"].encode("utf-8"))
 
+import matplotlib.pyplot as plt
+# import time
+y = x_reposts
 
+dates = []
+for d in x_date:
+    d = d[:-5].replace(u'T',u' ')
+    tempdate = time.mktime(time.strptime(d,'%Y-%m-%d %H:%M:%S'))
+    # print tempdate
+    dates.append(tempdate/1000000000)
+x = dates
+
+# z = np.cos(x**2)
+
+plt.figure(figsize=(80,50))
+plt.plot(x,y,color="red",linewidth=2)
+plt.plot(x,counts,"b--",label="$cos(x^2)$",color="green")
+plt.xlabel("Time(s)")
+plt.ylabel("Reposts")
+plt.title("find origin content")
+# plt.ylim(-1.2,1.2)
+plt.legend()
+plt.show()
