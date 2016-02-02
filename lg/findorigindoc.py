@@ -23,12 +23,13 @@ documents = [
             ]
 
 
-messagefile = './message.json'   #message文件位置
+messagefile = './message_repost_gt10.json'   #message文件位置
 
-similarity_limit = 0.8   #相似度下限
+similarity_limit = 0.6   #相似度下限
 
+reposts_limit = 2 #转发下限
 #input文本
-input = ['冬日里总是因为凛冽的寒风对出行望而却步，@新浪秒车 火力全开，#秒车团#雪中送炭，奔驰A级钜惠6.5万；福特金牛座首降6000；标致308超低6.6折；更有奥迪、宝马、丰田、本田、现代等终极大促！寒冬袭人，却感浓浓暖意，何不选一辆喜欢的，尽情享受假日出行的好心情吧','130641','201512082002'],
+input = [u'有次看六小龄童的采访，这张照片印象很深。说是拍西游记的时候章先生上了妆，在山上遇到了素不相识的小猴子，小猴子看见比自己体型大这么大的猴王，就敬了个礼。当然猴王也回了一个喽～。然后这照片拿了摄影的国际金奖。太好玩了',u'20797',u'201601281702'],
 
 #########################################################
 
@@ -38,7 +39,7 @@ def getjson(filename):
         for l in f:
             d = json.loads(l,encoding='utf-8')
 
-            if "reposts" in d.keys():
+            if "reposts" in d.keys() and d["reposts"]>0:
                 doc.append(d)
 
         return doc
@@ -78,7 +79,7 @@ dictionary = corpora.Dictionary(texts)
 corpus = [dictionary.doc2bow(text) for text in texts]  # 生成词袋
 tfidf = models.TfidfModel(corpus)
 copurs_tfidf = tfidf[corpus]
-lsi = models.LsiModel(copurs_tfidf, id2word=dictionary, num_topics=10)
+lsi = models.LsiModel(copurs_tfidf, id2word=dictionary, num_topics=20)
 index = similarities.MatrixSimilarity(lsi[corpus])
 input_bow = dictionary.doc2bow(jieba.lcut(delNOTNeedWords(''.join(input[0]))))
 input_lsi = lsi[input_bow]
@@ -91,7 +92,7 @@ print (sort_sims)
 
 output = []
 for d in sort_sims:
-    if (d[1]>similarity_limit):
+    if (d[1]>=similarity_limit and documents[0]["reposts"]>=reposts_limit):
         output.append(documents[d[0]])
 
 
