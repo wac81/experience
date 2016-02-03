@@ -22,7 +22,7 @@ import codecs
 # text = open(path).read().lower()
 
 
-text = codecs.open(u"唐诗三百首.txt", encoding='utf-8').read()
+text = codecs.open(u"sgqss.txt", encoding='gbk').read()
 print('corpus length:', len(text))
 
 chars = set(text)
@@ -69,7 +69,7 @@ def sample(a, temperature=1.0):
     return np.argmax(np.random.multinomial(1, a, 1))
 
 # train the model, output generated text after each iteration
-for iteration in range(1, 200):
+for iteration in range(1, 100):
     print()
     print('-' * 50)
     print('Iteration', iteration)
