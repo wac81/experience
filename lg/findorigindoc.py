@@ -8,7 +8,7 @@ import jieba
 import codecs
 import jieba.posseg as pseg
 import json
-import time
+import time,datetime
 # logging.basicConfig(format=’%(asctime)s:%(levelname)s:%(message)s’,level=logging.INFO)
 
 documents = [
@@ -30,7 +30,7 @@ similarity_limit = 0.7   #相似度下限
 
 reposts_limit = 1 #转发下限
 #input文本
-input = [u'六小龄童未得到春晚邀请的事情在持续发酵',u'20797',u'201601281702'],
+input = [u'六小龄童未得到春晚邀请的事情在持续发酵',u'20797',u'201601281702']
 
 #########################################################
 
@@ -44,11 +44,6 @@ def getjson(filename):
                 doc.append(d)
 
         return doc
-
-# documents = []
-documents = getjson(messagefile)
-
-
 
 def delNOTNeedWords(content,customstopwords=None):
     # words = jieba.lcut(content)
@@ -72,7 +67,13 @@ def delNOTNeedWords(content,customstopwords=None):
             result += word.encode('utf-8')  # +"/"+str(w.flag)+" "  #去停用词
     return result
 
+def convert_time(timestr):
+    date = timestr[:-5].replace(u'T',u' ')
+    datetimeObj = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
+    tempdate = int(datetimeObj.strftime("%Y%m%d%H%M"))
+    return tempdate
 
+documents = getjson(messagefile)
 # texts = [[word for word in jieba.lcut(delstopwords(document))] for document in documents]
 texts = [jieba.lcut(delNOTNeedWords(document["content"])) for document in documents]
 dictionary = corpora.Dictionary(texts)
@@ -91,80 +92,35 @@ print (sort_sims)
 
 # print (documents[sort_sims[0][0]])
 
-def convert_time(timestr):
-    date = timestr
-    date = date[:-5].replace(u'T',u' ')
-    tempdate = time.mktime(time.strptime(date,'%Y-%m-%d %H:%M:%S'))
-    return tempdate
 
 output = []
 valuecount = 0
-oldtime = 0
-nodetime = 0
 valuecounts = []
 for d in sort_sims:
-    # if documents[d[0]]["reposts"]>=reposts_limit:
-    #     print d[1],documents[0]["reposts"]
-
-    if "tC" in documents[d[0]].keys():
-        try:
-            if "$date" in documents[d[0]]["tC"].keys():
-                nowtime = convert_time(documents[d[0]]["tC"]["$date"])
-                valuecount = valuecount + 1
-                if oldtime!=nodetime:
-                    valuecounts.append(float(valuecount))
-                    valuecount = 0
-                    oldtime = nodetime
-
-                if (d[1]>=similarity_limit and documents[d[0]]["reposts"]>=reposts_limit):
-                    output.append(documents[d[0]])
-                    nodetime = convert_time(documents[d[0]]["tC"]["$date"])
-
-        except:
-            print (documents[d[0]])
-
-    # valuecount = valuecount + 1
-    # if oldtime!=nodetime:
-    #     valuecounts.append(float(valuecount))
-    #     valuecount = 0
-    #     oldtime = nodetime
-    #
-    # if (d[1]>=similarity_limit and documents[d[0]]["reposts"]>=reposts_limit):
-    #     output.append(documents[d[0]])
-    #     if "tC" in documents[d[0]].keys():
-    #         if "$date" in documents[d[0]]["tC"].keys():
-    #             nodetime = convert_time(documents[d[0]]["tC"]["$date"])
-
-
+    if "tC" in documents[d[0]].keys() and documents[d[0]]["tC"]!=None and "$date" in documents[d[0]]["tC"].keys():
+            valuecount = valuecount + 1
+            if (d[1]>=similarity_limit and documents[d[0]]["reposts"]>=reposts_limit):
+                output.append(documents[d[0]])
+                valuecounts.append(float(valuecount))
+                valuecount = 0
 
 # output_date = output.sort(lambda a,b:a[2]-b[2])
-# try:
 output_date = sorted(output,key=lambda x:x["tC"]["$date"])
-# except TypeError:
-#     print TypeError
 x_reposts = []
 x_date = []
 for item in output_date:
     print(item["content"].encode("utf-8")+" "+ str(item["reposts"])+" "+item["tC"]["$date"].encode("utf-8"))
     x_reposts.append(float(item["reposts"]))
-    x_date.append(item["tC"]["$date"].encode("utf-8"))
+    x_date.append(convert_time(item["tC"]["$date"]))
 
-import matplotlib.pyplot as plt
-# import time
 y = x_reposts
+x = x_date
+import matplotlib.pyplot as plt
 
-dates = []
-for d in x_date:
-    # print tempdate
-    dates.append(convert_time(d)/(1000*3600))
-
-x = dates
-
-# z = np.cos(x**2)
-
-plt.figure(figsize=(200,50))
+# plt.figure(figsize=(200,50))
+plt.figure()
 plt.plot(x,y,color="red",linewidth=2)
-print (valuecounts)
+print (valuecounts,len(x),len(valuecounts))
 plt.plot(x,valuecounts,"b--",label="$cos(x^2)$",color="green")
 plt.xlabel("Time(s)")
 plt.ylabel("Reposts")
