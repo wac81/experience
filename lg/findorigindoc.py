@@ -24,9 +24,9 @@ documents = [
             ]
 
 
-messagefile = './message_liuxiaolingtong.json'   #message文件位置
-
-similarity_limit = 0.8   #相似度下限
+# messagefile = './message_liuxiaolingtong.json'   #message文件位置
+messagefile = './weibo.json'   #message文件位置
+similarity_limit = 0.7   #相似度下限
 
 reposts_limit = 1 #转发下限
 #input文本
@@ -91,25 +91,49 @@ print (sort_sims)
 
 # print (documents[sort_sims[0][0]])
 
+def convert_time(timestr):
+    date = timestr
+    date = date[:-5].replace(u'T',u' ')
+    tempdate = time.mktime(time.strptime(date,'%Y-%m-%d %H:%M:%S'))
+    return tempdate
+
 output = []
-count = 0
+valuecount = 0
 oldtime = 0
-counts = []
+nodetime = 0
+valuecounts = []
 for d in sort_sims:
     # if documents[d[0]]["reposts"]>=reposts_limit:
     #     print d[1],documents[0]["reposts"]
-    date = documents[d[0]]["tC"]["$date"]
-    date = date[:-5].replace(u'T',u' ')
-    tempdate = time.mktime(time.strptime(date,'%Y-%m-%d %H:%M:%S'))
-    time = int(tempdate/10000000)
-    count = count + 1
-    if oldtime!=time:
-        counts.append(float(count))
-        count = 0
-        oldtime = time
 
-    if (d[1]>=similarity_limit and documents[d[0]]["reposts"]>=reposts_limit):
-        output.append(documents[d[0]])
+    if "tC" in documents[d[0]].keys():
+        try:
+            if "$date" in documents[d[0]]["tC"].keys():
+                nowtime = convert_time(documents[d[0]]["tC"]["$date"])
+                valuecount = valuecount + 1
+                if oldtime!=nodetime:
+                    valuecounts.append(float(valuecount))
+                    valuecount = 0
+                    oldtime = nodetime
+
+                if (d[1]>=similarity_limit and documents[d[0]]["reposts"]>=reposts_limit):
+                    output.append(documents[d[0]])
+                    nodetime = convert_time(documents[d[0]]["tC"]["$date"])
+
+        except:
+            print (documents[d[0]])
+
+    # valuecount = valuecount + 1
+    # if oldtime!=nodetime:
+    #     valuecounts.append(float(valuecount))
+    #     valuecount = 0
+    #     oldtime = nodetime
+    #
+    # if (d[1]>=similarity_limit and documents[d[0]]["reposts"]>=reposts_limit):
+    #     output.append(documents[d[0]])
+    #     if "tC" in documents[d[0]].keys():
+    #         if "$date" in documents[d[0]]["tC"].keys():
+    #             nodetime = convert_time(documents[d[0]]["tC"]["$date"])
 
 
 
@@ -131,17 +155,17 @@ y = x_reposts
 
 dates = []
 for d in x_date:
-    d = d[:-5].replace(u'T',u' ')
-    tempdate = time.mktime(time.strptime(d,'%Y-%m-%d %H:%M:%S'))
     # print tempdate
-    dates.append(tempdate/1000000000)
+    dates.append(convert_time(d)/(1000*3600))
+
 x = dates
 
 # z = np.cos(x**2)
 
-plt.figure(figsize=(80,50))
+plt.figure(figsize=(200,50))
 plt.plot(x,y,color="red",linewidth=2)
-plt.plot(x,counts,"b--",label="$cos(x^2)$",color="green")
+print (valuecounts)
+plt.plot(x,valuecounts,"b--",label="$cos(x^2)$",color="green")
 plt.xlabel("Time(s)")
 plt.ylabel("Reposts")
 plt.title("find origin content")
