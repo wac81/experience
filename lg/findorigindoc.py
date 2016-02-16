@@ -28,7 +28,7 @@ documents = [
 messagefile = './weibo.json'   #message文件位置
 similarity_limit = 0.7   #相似度下限
 
-reposts_limit = 1 #转发下限
+reposts_limit = 2 #转发下限
 #input文本
 input = [u'六小龄童未得到春晚邀请的事情在持续发酵',u'20797',u'201601281702']
 
@@ -39,10 +39,8 @@ def getjson(filename):
     with open(filename, "r") as f:
         for l in f:
             d = json.loads(l,encoding='utf-8')
-
             if "reposts" in d.keys() and d["reposts"]>=0:
                 doc.append(d)
-
         return doc
 
 def delNOTNeedWords(content,customstopwords=None):
@@ -100,9 +98,10 @@ for d in sort_sims:
     if "tC" in documents[d[0]].keys() and documents[d[0]]["tC"]!=None and "$date" in documents[d[0]]["tC"].keys():
             valuecount = valuecount + 1
             if (d[1]>=similarity_limit and documents[d[0]]["reposts"]>=reposts_limit):
-                output.append(documents[d[0]])
-                valuecounts.append(float(valuecount))
-                valuecount = 0
+                if convert_time(documents[d[0]]["tC"]["$date"])>201600000000:
+                    output.append(documents[d[0]])
+                    valuecounts.append(float(valuecount))
+                    valuecount = 0
 
 # output_date = output.sort(lambda a,b:a[2]-b[2])
 output_date = sorted(output,key=lambda x:x["tC"]["$date"])
