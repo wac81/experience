@@ -7,6 +7,8 @@ import jieba
 import time
 import jieba.posseg as pseg
 import pprint as pp
+import multiprocessing
+
 # import matplotlib.pyplot as plt
 from corpus_preprocess import txt2list, xls2list, json_dict_from_file, delete_stop_words, clean_comment
 from gensim.models import Word2Vec
@@ -21,7 +23,7 @@ def get_text_from_tuple(tuple_in):
     for _, text in tuple_in:
         yield list(jieba.cut(text))
 
-auto_brand = codecs.open("autotype.txt", encoding='utf-8').read()
+auto_brand = codecs.open("Automotive_Brand.txt", encoding='utf-8').read()
 
 class MySentences(object):
     def __init__(self, dirname):
@@ -44,6 +46,7 @@ if __name__ == '__main__':
 
     file_name = "./koubei_50w.json"
     save_model = "./word2vec.model"
+    save_model2 = "./word2vec.model.txt"
     # s_list, vocab, word_idx = txt2list(file_name, return_mod=3, is_filter=True)
     # s_list, vocab, word_idx = xls2list(file_name, return_mod=3, is_filter=True)
     # s_list = MySentences(file_name)
@@ -61,13 +64,15 @@ if __name__ == '__main__':
     tic = time.time()
     if os.path.isfile(save_model):
         model = Word2Vec.load(save_model)
+        print(model.vocab)
         print("Loaded word2vec model")
     else:
         s_list = json_dict_from_file(file_name,"content")
-        model = Word2Vec(s_list, size=feature_size, window=content_window, iter=t_iter, min_count=freq_min_count,negative=negative, workers=threads_num)
+        model = Word2Vec(s_list, size=feature_size, window=content_window, iter=t_iter, min_count=freq_min_count,negative=negative, workers=multiprocessing.cpu_count())
         toc = time.time()
         print("Word2vec completed! Elapsed time is %s." % (toc-tic))
         model.save(save_model)
+        model.save_word2vec_format(save_model2, binary=False)
         print("Word2vec Saved!")
 
 
@@ -105,7 +110,7 @@ if __name__ == '__main__':
     """
     汽车品牌
     """
-    for b in auto_brand.split(u'\r\n'):
+    for b in auto_brand.split(u'\n'):
         print("============= 请输入想测试的单词（多个单词用空格隔开） ============")
         x = b.replace(u'\ufeff', '').split(u' ')
         if len(x) > 1:
