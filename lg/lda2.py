@@ -85,3 +85,9 @@ copurs_tfidf = tfidf[corpus]
 lda = models.LdaModel(copurs_tfidf, id2word=dictionary, num_topics=10)
 print(lda.print_topics(1)[0][1])
 print(lda.print_topics(2)[0][1])
+
+
+#句子聚类
+corpus_lda = lda[copurs_tfidf]
+for doc in corpus_lda:
+    print doc
