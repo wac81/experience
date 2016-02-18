@@ -1,0 +1,4 @@
+many of the usage patterns are similar.
+You can easily adjust the dimension of the representation.
+the number of workers, or almost any other parameter that you can change with the Word2Vec model.
+The one exception to this rule are the parameters relating to the training method used by the model.
