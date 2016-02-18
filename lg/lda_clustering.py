@@ -90,12 +90,31 @@ dictionary = corpora.Dictionary(texts)
 corpus = [dictionary.doc2bow(text) for text in texts]  # 生成词袋
 tfidf = models.TfidfModel(corpus)
 copurs_tfidf = tfidf[corpus]
-lda = models.LdaModel(copurs_tfidf, id2word=dictionary, num_topics=10)
+lda = models.LdaModel(copurs_tfidf, id2word=dictionary, num_topics=20)
 print(lda.print_topics(1)[0][1])
 print(lda.print_topics(2)[0][1])
 
 
 #句子聚类
 corpus_lda = lda[copurs_tfidf]
-for doc in corpus_lda:
-    print doc
+index = similarities.MatrixSimilarity(corpus_lda)
+# sort_sims = sorted(enumerate(corpus_lda), key=lambda item: -item[1])
+temparray =  [[] for i in range(20)]
+result = []
+# np.ndarray()
+for id,doc in enumerate(corpus_lda):
+    for docid,item in enumerate(doc):
+        item = list(item)
+        item[0] = id
+        item = tuple(item)
+        temparray[docid].append(item)
+    # print doc
+sort_sims = sorted(temparray[0], key=lambda item: -item[1])
+print sort_sims
+print documents[sort_sims[0][0]]
+sort_sims = sorted(temparray[1], key=lambda item: -item[1])
+print sort_sims
+print documents[sort_sims[0][0]]
+sort_sims = sorted(temparray[2], key=lambda item: -item[1])
+print sort_sims
+print documents[sort_sims[0][0]]

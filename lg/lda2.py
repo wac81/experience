@@ -7,6 +7,7 @@ import logging
 import jieba
 import codecs
 import jieba.posseg as pseg
+import numpy as np
 
 # logging.basicConfig(format=’%(asctime)s:%(levelname)s:%(message)s’,level=logging.INFO)
 
@@ -91,5 +92,22 @@ print(lda.print_topics(2)[0][1])
 corpus_lda = lda[copurs_tfidf]
 index = similarities.MatrixSimilarity(corpus_lda)
 # sort_sims = sorted(enumerate(corpus_lda), key=lambda item: -item[1])
-for doc in corpus_lda:
-    print doc
+temparray =  [[] for i in range(10)]
+result = []
+# np.ndarray()
+for id,doc in enumerate(corpus_lda):
+    for docid,item in enumerate(doc):
+        item = list(item)
+        item[0] = id
+        item = tuple(item)
+        temparray[docid].append(item)
+    # print doc
+sort_sims = sorted(temparray[0], key=lambda item: -item[1])
+print sort_sims
+print documents[sort_sims[0][0]]
+sort_sims = sorted(temparray[1], key=lambda item: -item[1])
+print sort_sims
+print documents[sort_sims[0][0]]
+sort_sims = sorted(temparray[2], key=lambda item: -item[1])
+print sort_sims
+print documents[sort_sims[0][0]]
