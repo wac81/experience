@@ -17,6 +17,7 @@ print("Initial model:")
 print(w.get_value())
 print(b.get_value())
 
+
 # Construct Theano expression graph
 p_1 = 1 / (1 + T.exp(-T.dot(x, w) - b))   # Probability that target = 1
 prediction = p_1 > 0.5                    # The prediction thresholded
