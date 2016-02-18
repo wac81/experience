@@ -7,6 +7,8 @@ import logging
 import jieba
 import codecs
 import jieba.posseg as pseg
+import json
+import re
 
 # logging.basicConfig(format=’%(asctime)s:%(levelname)s:%(message)s’,level=logging.INFO)
 
@@ -36,47 +38,53 @@ documents = ["一年了，目前没有什么故障，也没有他们说的国产
 #              u"目前的油费统计一下 总加油量：917.44L|总加油金额：6095元|总天数：375天|平均油耗：7.05L|平均油费:0.48元/公里 我还会继续追加口碑的"]
 
 
-def delstopwords(content):
-    stopwords = codecs.open('stopwords.txt', encoding='UTF-8').read()
-    stopwordSet = set(stopwords.split('\n'))
+# stopwords = codecs.open('stopwords.txt', encoding='UTF-8').read()
+# print stopwords
+
+
+def json_dict_from_file(json_file,fieldname=None):
+    """
+    load json file and generate a new object instance whose __name__ filed
+    will be 'inst'
+    :param json_file:
+    """
+    obj_s = []
+    with open(json_file) as f:
+        for line in f:
+            object_dict = json.loads(line)
+            if fieldname==None:
+                obj_s.append(object_dict)
+            elif object_dict.has_key(fieldname):
+
+                obj_s.append(delNOTNeedWords(object_dict[fieldname])[1])
+    return obj_s
+
+def delNOTNeedWords(content,customstopwords=None):
     # words = jieba.lcut(content)
+    if customstopwords == None:
+        import os
+        file_stop_words = "stopwords.txt"
+        if os.path.exists(file_stop_words):
+            stop_words = codecs.open(file_stop_words, encoding='UTF-8').read()
+            customstopwords = stop_words
+
     result=''
+    return_words = []
     # for w in words:
     #     if w not in stopwords:
     #         result += w.encode('utf-8')  # +"/"+str(w.flag)+" "  #去停用词
-
-# v 动词
-#
-# vd 副动词
-#
-# vn 名动词
-#
-# vshi 动词“是”
-#
-# vyou 动词“有”
-#
-# vf 趋向动词
-#
-# vx 形式动词
-#
-# vi 不及物动词（内动词）
-#
-# vl 动词性惯用语
-#
-# vg 动词性语素
-
-
     words = pseg.lcut(content)
-    for word, flag in words:
-        if (word not in stopwordSet and flag not in ["/x","/zg","/uj","/ul","/e","/d","/uz","/y","/v","/vd","/vn","/vshi","/vyou","/v","/vf","/vx","/vi","/vl","/vg"]): #去停用词和其他词性，比如非名词动词等
-        # if (word not in stopwords and flag in ["/n","/a","/d"]): #去停用词和其他词性，比如非名词动词等
 
+    for word, flag in words:
+        # print word.encode('utf-8')
+        if (word not in customstopwords and flag[0] in [u'n', u'f', u'a', u'z']):
+            # ["/x","/zg","/uj","/ul","/e","/d","/uz","/y"]): #去停用词和其他词性，比如非名词动词等
             result += word.encode('utf-8')  # +"/"+str(w.flag)+" "  #去停用词
-            # print result
-    return result
+            return_words.append(word.encode('utf-8'))
+    return result,return_words
 
 # texts = [[word for word in jieba.lcut(delstopwords(document))] for document in documents]
-texts = [jieba.lcut(delstopwords(document)) for document in documents]
+texts = json_dict_from_file('/home/wac/data/hotWeibo_9200.json','content')
 dictionary = corpora.Dictionary(texts)
 
 corpus = [dictionary.doc2bow(text) for text in texts]  # 生成词袋
@@ -89,7 +97,5 @@ print(lda.print_topics(2)[0][1])
 
 #句子聚类
 corpus_lda = lda[copurs_tfidf]
-index = similarities.MatrixSimilarity(corpus_lda)
-# sort_sims = sorted(enumerate(corpus_lda), key=lambda item: -item[1])
 for doc in corpus_lda:
     print doc

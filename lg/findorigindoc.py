@@ -24,8 +24,8 @@ documents = [
             ]
 
 
-# messagefile = './message_liuxiaolingtong.json'   #message文件位置
-messagefile = './weibo.json'   #message文件位置
+messagefile = './message_liuxiaolingtong.json'   #message文件位置
+# messagefile = './weibo.json'   #message文件位置
 similarity_limit = 0.7   #相似度下限
 
 reposts_limit = 2 #转发下限
