@@ -42,7 +42,7 @@ documents = ["一年了，目前没有什么故障，也没有他们说的国产
 # print stopwords
 
 
-def json_dict_from_file(json_file,fieldname=None):
+def json_dict_from_file(json_file,fieldname=None,isdelwords=True):
     """
     load json file and generate a new object instance whose __name__ filed
     will be 'inst'
@@ -55,8 +55,10 @@ def json_dict_from_file(json_file,fieldname=None):
             if fieldname==None:
                 obj_s.append(object_dict)
             elif object_dict.has_key(fieldname):
-
-                obj_s.append(delNOTNeedWords(object_dict[fieldname])[1])
+                if isdelwords:
+                    obj_s.append(delNOTNeedWords(object_dict[fieldname])[1])
+                else:
+                    obj_s.append(object_dict[fieldname])
     return obj_s
 
 def delNOTNeedWords(content,customstopwords=None):
@@ -84,6 +86,7 @@ def delNOTNeedWords(content,customstopwords=None):
     return result,return_words
 
 # texts = [[word for word in jieba.lcut(delstopwords(document))] for document in documents]
+
 texts = json_dict_from_file('/home/wac/data/hotWeibo_9200.json','content')
 dictionary = corpora.Dictionary(texts)
 
@@ -109,12 +112,9 @@ for id,doc in enumerate(corpus_lda):
         item = tuple(item)
         temparray[docid].append(item)
     # print doc
-sort_sims = sorted(temparray[0], key=lambda item: -item[1])
-print sort_sims
-print documents[sort_sims[0][0]]
-sort_sims = sorted(temparray[1], key=lambda item: -item[1])
-print sort_sims
-print documents[sort_sims[0][0]]
-sort_sims = sorted(temparray[2], key=lambda item: -item[1])
-print sort_sims
-print documents[sort_sims[0][0]]
+
+documents = json_dict_from_file('/home/wac/data/hotWeibo_9200.json','content',False)
+for itemone in temparray:
+    sort_sims = sorted(itemone, key=lambda item: -item[1])
+    # print sort_sims
+    print documents[sort_sims[0][0]]
