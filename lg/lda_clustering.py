@@ -79,7 +79,7 @@ def delNOTNeedWords(content,customstopwords=None):
 
     for word, flag in words:
         # print word.encode('utf-8')
-        if (word not in customstopwords and flag[0] in [u'n', u'f', u'a', u'z']):
+        if (word not in customstopwords and flag[0] in [u'n', u'f', u'a',  u'v', u'd',u'z']):
             # ["/x","/zg","/uj","/ul","/e","/d","/uz","/y"]): #去停用词和其他词性，比如非名词动词等
             result += word.encode('utf-8')  # +"/"+str(w.flag)+" "  #去停用词
             return_words.append(word.encode('utf-8'))
