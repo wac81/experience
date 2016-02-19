@@ -40,6 +40,7 @@ documents = ["一年了，目前没有什么故障，也没有他们说的国产
 
 # stopwords = codecs.open('stopwords.txt', encoding='UTF-8').read()
 # print stopwords
+topicnum = 7
 
 
 def json_dict_from_file(json_file,fieldname=None,isdelwords=True):
@@ -86,14 +87,14 @@ def delNOTNeedWords(content,customstopwords=None):
     return result,return_words
 
 # texts = [[word for word in jieba.lcut(delstopwords(document))] for document in documents]
-
-texts = json_dict_from_file('/home/wac/data/hotWeibo_9200.json','content')
+datafilename = '/home/wac/data/chunwan.json'
+texts = json_dict_from_file(datafilename,'content')
 dictionary = corpora.Dictionary(texts)
 
 corpus = [dictionary.doc2bow(text) for text in texts]  # 生成词袋
 tfidf = models.TfidfModel(corpus)
 copurs_tfidf = tfidf[corpus]
-lda = models.LdaModel(copurs_tfidf, id2word=dictionary, num_topics=20)
+lda = models.LdaModel(copurs_tfidf, id2word=dictionary, num_topics=topicnum)
 print(lda.print_topics(1)[0][1])
 print(lda.print_topics(2)[0][1])
 
@@ -102,9 +103,16 @@ print(lda.print_topics(2)[0][1])
 corpus_lda = lda[copurs_tfidf]
 index = similarities.MatrixSimilarity(corpus_lda)
 # sort_sims = sorted(enumerate(corpus_lda), key=lambda item: -item[1])
-temparray =  [[] for i in range(20)]
+temparray =  [[] for i in range(topicnum)]
+numarray =  [[] for i in range(topicnum)]
 result = []
 # np.ndarray()
+for id,doc in enumerate(corpus_lda):
+    temp = sorted(doc, key=lambda x: -x[1])
+    numarray[temp[0][0]].append(temp)
+
+    # print doc
+
 for id,doc in enumerate(corpus_lda):
     for docid,item in enumerate(doc):
         item = list(item)
@@ -113,8 +121,12 @@ for id,doc in enumerate(corpus_lda):
         temparray[docid].append(item)
     # print doc
 
-documents = json_dict_from_file('/home/wac/data/hotWeibo_9200.json','content',False)
-for itemone in temparray:
+
+documents = json_dict_from_file(datafilename,'content',False)
+for id,itemone in enumerate(temparray):
     sort_sims = sorted(itemone, key=lambda item: -item[1])
     # print sort_sims
     print documents[sort_sims[0][0]]
+    print sort_sims[0][1]
+    print len(numarray[id])
+
