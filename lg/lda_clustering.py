@@ -70,12 +70,6 @@ def delNOTNeedWords(content,customstopwords=None):
 datafilename = '/home/wac/data/chunwan.json'
 
 documents = json_dict_from_file(datafilename,['content','reposts'],False)
-# repost = json_dict_from_file(datafilename,'content',False)
-# repostrepost = sorted(documents, key=lambda x: -x[1])
-# print repostrepost[0][1],repostrepost[0][0].encode("utf-8")
-# print repostrepost[1][1],repostrepost[1][0].encode("utf-8")
-# print repostrepost[2][1],repostrepost[2][0].encode("utf-8")
-# print repostrepost[3][1],repostrepost[3][0].encode("utf-8")
 
 
 # texts = json_dict_from_file(datafilename,['content'])
