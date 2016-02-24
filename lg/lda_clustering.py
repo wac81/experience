@@ -68,6 +68,7 @@ def delNOTNeedWords(content,customstopwords=None):
 
 # texts = [[word for word in jieba.lcut(delstopwords(document))] for document in documents]
 datafilename = '/home/wac/data/chunwan.json'
+# datafilename = './coralqq.json'
 
 documents = json_dict_from_file(datafilename,['content','reposts'],False)
 
@@ -80,8 +81,8 @@ corpus = [dictionary.doc2bow(text) for text in texts]  # 生成词袋
 tfidf = models.TfidfModel(corpus)
 copurs_tfidf = tfidf[corpus]
 lda = models.LdaModel(copurs_tfidf, id2word=dictionary, num_topics=topicnum)
-print(lda.print_topics(1)[0][1])
-print(lda.print_topics(2)[0][1])
+# print(lda.print_topics(1)[0][1])
+# print(lda.print_topics(2)[0][1])
 
 
 #句子聚类

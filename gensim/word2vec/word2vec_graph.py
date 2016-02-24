@@ -9,52 +9,92 @@ import jieba.posseg as pseg
 import pprint as pp
 import codecs
 import multiprocessing
-
+import json
 # import matplotlib.pyplot as plt
 from svm_sentiment_grocery import txt2list
 from gensim.models import Word2Vec,Phrases
 
 
-auto_brand = codecs.open("Automotive_Brand.txt", encoding='gb2312').read()
+# auto_brand = codecs.open("Automotive_Brand.txt", encoding='utf-8').read()
 
 
-def get_text_from_tuple(tuple_in):
+def json_dict_from_file(json_file,fieldnames=None,isdelwords=True):
     """
-    假设语料都是 clean 过得，这里不做 clean 和去停用词的工作
-    :param tuple_in: [(label1, text1), (label2, text2), ...]
-    :return: [[text1], [text2], ...] 返回生成器
+    load json file and generate a new object instance whose __name__ filed
+    will be 'inst'
+    :param json_file:
     """
-    for _, text in tuple_in:
-        yield list(jieba.cut(text))
+    obj_s = []
+    with open(json_file) as f:
+        for line in f:
+            object_dict = json.loads(line)
+            if fieldnames==None:
+                obj_s.append(object_dict)
+            else:
+                # for fieldname in fieldname:
+                    if set(fieldnames).issubset(set(object_dict.keys())):
+                        one = []
+                        for fieldname in fieldnames:
+                            if isdelwords and fieldname == 'content':
+                                one.append(delNOTNeedWords(object_dict[fieldname])[1])
+                            else:
+                                one.append(object_dict[fieldname])
+                        obj_s.append(one)
+    return obj_s
+def delNOTNeedWords(content,customstopwords=None):
+    # words = jieba.lcut(content)
+    if customstopwords == None:
+        import os
+        file_stop_words = "stopwords.txt"
+        if os.path.exists(file_stop_words):
+            stop_words = codecs.open(file_stop_words, encoding='UTF-8').read()
+            customstopwords = stop_words
 
+    result=''
+    return_words = []
+    # for w in words:
+    #     if w not in stopwords:
+    #         result += w.encode('utf-8')  # +"/"+str(w.flag)+" "  #去停用词
+    words = pseg.lcut(content)
 
+    for word, flag in words:
+        # print word.encode('utf-8')
+        tempword = word.encode('utf-8').strip(' ')
+        if (word not in customstopwords and len(tempword)>0 and flag[0] in [u'n', u'f', u'a',u'z']):
+            # and flag[0] in [u'n', u'f', u'a', u'z']):
+            # ["/x","/zg","/uj","/ul","/e","/d","/uz","/y"]): #去停用词和其他词性，比如非名词动词等
+            result += tempword # +"/"+str(w.flag)+" "  #去停用词
+            return_words.append(tempword)
+    return result,return_words
 
-class MySentences(object):
-    def __init__(self, dirname):
-        self.dirname = dirname
-
-    def __iter__(self):
-        for fname in os.listdir(self.dirname):
-            for line in open(os.path.join(self.dirname, fname)):
-                yield line.split()
 
 
 if __name__ == '__main__':
 
-    file_name = "./result.txt"
-    s_list, vocab, word_idx = txt2list(file_name, return_mod=3, is_filter=True)
+    # file_name = "./smzdm_one.txt"
+    #
+    # files = open(file_name)
+    # s_list = []
+    # for line in files:
+    #     s_list.append(delNOTNeedWords(line)[1])
 
-    feature_size = 400
-    content_window = 10
-    freq_min_count = 3
+    # s_list, vocab, word_idx = txt2list(file_name, return_mod=3, is_filter=True)
+    file_name = "./coralqq.json"
+    s_list = json_dict_from_file(file_name,['content'],True)
+
+    s_list = [d[0] for d in s_list]
+
+    feature_size = 20
+    content_window = 3
+    freq_min_count = 2
     # threads_num = 4
-    negative = 4   #best采样使用hierarchical softmax方法(负采样，对常见词有利)，不使用negative sampling方法(对罕见词有利)。
-    iter = 10
+    negative = 0   #best采样使用hierarchical softmax方法(负采样，对常见词有利)，不使用negative sampling方法(对罕见词有利)。
+    iter = 60
 
     print("word2vec...")
     tic = time.time()
     bigram_transformer = Phrases(s_list)
-    model = Word2Vec(bigram_transformer[s_list], size=feature_size, window=content_window, min_count=freq_min_count, negative=negative, iter=iter, workers=multiprocessing.cpu_count())
+    model = Word2Vec(bigram_transformer[s_list], size=feature_size, window=content_window, min_count=freq_min_count, iter=iter, workers=multiprocessing.cpu_count())
     toc = time.time()
     print("Word2vec completed! Elapsed time is %s." % (toc-tic))
 
@@ -63,9 +103,12 @@ if __name__ == '__main__':
         t_word = sys.stdin.readline()
         if "quit" in t_word:
             break
-        results = model.most_similar([t_word.decode('utf-8').strip('\n').strip('\r').strip(' ')],topn=30)
+        try:
+            results = model.most_similar([t_word.decode('utf-8').strip('\n').strip('\r').strip(' ')],topn=10)
+        except:
+            continue
         # results = model.most_similar(negative=[u'豪车'],topn=5)
         for t_w, t_sim in results:
-            if any ([t_w==ab for ab in auto_brand.split(u'\r\n')]):      #过滤品牌
-                print(t_w, " ", t_sim)
+            # if any ([t_w==ab for ab in auto_brand.split(u'\r\n')]):      #过滤品牌
+            print(t_w, " ", t_sim)
 
