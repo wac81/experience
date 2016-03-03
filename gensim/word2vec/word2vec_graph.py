@@ -60,7 +60,7 @@ def delNOTNeedWords(content,customstopwords=None):
     for word, flag in words:
         # print word.encode('utf-8')
         tempword = word.encode('utf-8').strip(' ')
-        if (word not in customstopwords and len(tempword)>0 and flag[0] in [u'n', u'f', u'a',u'z']):
+        if (word not in customstopwords and len(tempword)>0 and flag in [u'n',u'nr',u'ns',u'nt',u'nz',u'ng',u't',u'tg',u'f',u'v',u'vd',u'vn',u'vf',u'vx',u'vi',u'vl',u'vg', u'a',u'an',u'ag',u'al',u'm',u'mq',u'o',u'x']):
             # and flag[0] in [u'n', u'f', u'a', u'z']):
             # ["/x","/zg","/uj","/ul","/e","/d","/uz","/y"]): #去停用词和其他词性，比如非名词动词等
             result += tempword # +"/"+str(w.flag)+" "  #去停用词
@@ -71,25 +71,25 @@ def delNOTNeedWords(content,customstopwords=None):
 
 if __name__ == '__main__':
 
-    # file_name = "./smzdm_one.txt"
-    #
-    # files = open(file_name)
-    # s_list = []
-    # for line in files:
-    #     s_list.append(delNOTNeedWords(line)[1])
+    file_name = "./smzdm_one.txt"
+
+    files = open(file_name)
+    s_list = []
+    for line in files:
+        s_list.append(delNOTNeedWords(line)[1])
 
     # s_list, vocab, word_idx = txt2list(file_name, return_mod=3, is_filter=True)
-    file_name = "./coralqq.json"
-    s_list = json_dict_from_file(file_name,['content'],True)
+    # file_name = "./coralqq.json"
+    # s_list = json_dict_from_file(file_name,['content'],True)
+    #
+    # s_list = [d[0] for d in s_list]
 
-    s_list = [d[0] for d in s_list]
-
-    feature_size = 20
-    content_window = 3
+    feature_size = 50
+    content_window = 4
     freq_min_count = 2
     # threads_num = 4
-    negative = 0   #best采样使用hierarchical softmax方法(负采样，对常见词有利)，不使用negative sampling方法(对罕见词有利)。
-    iter = 60
+    negative = 3   #best采样使用hierarchical softmax方法(负采样，对常见词有利)，不使用negative sampling方法(对罕见词有利)。
+    iter = 20
 
     print("word2vec...")
     tic = time.time()
@@ -104,7 +104,8 @@ if __name__ == '__main__':
         if "quit" in t_word:
             break
         try:
-            results = model.most_similar([t_word.decode('utf-8').strip('\n').strip('\r').strip(' ')],topn=10)
+
+            results = model.most_similar([t_word.decode('utf-8').strip('\n').strip('\r').strip(' ')],topn=30)
         except:
             continue
         # results = model.most_similar(negative=[u'豪车'],topn=5)

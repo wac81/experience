@@ -26,7 +26,8 @@ def delNOTNeedWords(content,customstopwords=None):
 
     for word, flag in words:
         # print word.encode('utf-8')
-        if (word not in customstopwords and flag[0] in [u'n', u'f', u'a', u'z']):
+        if (word not in customstopwords and len(word)>0 and flag in [u'n',u'nr',u'ns',u'nt',u'nz',u'ng',u't',u'tg',u'f',u'v',u'vd',u'vn',u'vf',u'vx',u'vi',u'vl',u'vg', u'a',u'an',u'ag',u'al',u'm',u'mq',u'o',u'x']):
+
             # ["/x","/zg","/uj","/ul","/e","/d","/uz","/y"]): #去停用词和其他词性，比如非名词动词等
             result += word.encode('utf-8')  # +"/"+str(w.flag)+" "  #去停用词
             return_words.append(word.encode('utf-8'))
@@ -49,17 +50,26 @@ class DirOfPlainTextCorpus(object):
 
 
 
-
-model = Doc2Vec(DirOfPlainTextCorpus('docs.txt'),size=10, window=3, min_count=3, workers=4,min_alpha=0.002)
+filename = 'smzdm_one.txt'
+limit = 0.6
+model = Doc2Vec(DirOfPlainTextCorpus(filename),size=10, window=3, min_count=3, workers=4,min_alpha=0.002)
 
 
 model.save(modelfilename)
 
 #########新句子查询相似度
-doc = u'奥迪车主的申请'
+doc = u'这牛奶价格高'
 inf_vec = model.infer_vector(delNOTNeedWords(doc)[1])
 sims = model.docvecs.most_similar([inf_vec])
 print sims
+
+lines = []
+for line in open(filename):
+    lines.append(line)
+
+for s in sims:
+    if s[1] > limit:
+        print lines[s[0]]
 #########
 
 #########训练集内部句子查询相似度
