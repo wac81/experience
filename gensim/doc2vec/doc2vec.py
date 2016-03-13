@@ -6,6 +6,7 @@ import os
 import re
 import codecs
 import jieba.posseg as pseg
+import multiprocessing
 stopwords = codecs.open('stopwords.txt', encoding='UTF-8').read()
 modelfilename = 'doc2vec.model'
 def delNOTNeedWords(content,customstopwords=None):
@@ -52,7 +53,7 @@ class DirOfPlainTextCorpus(object):
 
 filename = 'smzdm_one.txt'
 limit = 0.6
-model = Doc2Vec(DirOfPlainTextCorpus(filename),size=10, window=3, min_count=3, workers=4,min_alpha=0.002)
+model = Doc2Vec(DirOfPlainTextCorpus(filename),size=10, window=3, min_count=3, workers=multiprocessing.cpu_count(),min_alpha=0.002)
 
 
 model.save(modelfilename)

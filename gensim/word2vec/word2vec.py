@@ -2,6 +2,7 @@
 from gensim import models
 # gensim .models.Word2Vec
 import jieba
+import multiprocessing
 save_filename = 'word2vec.model'
 sentences = [
     u'还记得上次放出的奔驰GLE vs 奥迪Q7 vs 路虎揽胜运动版 vs 雷克萨斯RX vs 保时捷卡宴 vs 宝马X5静态测评篇么？动态测评戳这里→',
@@ -128,7 +129,7 @@ for sentence in sentences:
     input.append(jieba.lcut(sentence))
 
 bigram_transformer = models.Phrases(input)
-model = models.Word2Vec(bigram_transformer[input], size=feature_size, window=content_window, min_count=freq_min_count, negative=negative, iter=iter, workers=threads_num)
+model = models.Word2Vec(bigram_transformer[input], size=feature_size, window=content_window, min_count=freq_min_count, negative=negative, iter=iter, workers=multiprocessing.cpu_count())
 # print model.index2word
 model.save(save_filename)
 f = model.most_similar([u'奥迪'])
