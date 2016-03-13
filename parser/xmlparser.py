@@ -39,13 +39,65 @@
 
 import xml.etree.cElementTree as ET
 
-tree = ET.ElementTree(file='/home/wac/data/zhwiki-20160203-pages-articles-multistream.xml')
+def print_node(node):
+    print "====================================="
+    for key,value in node.items():
+      print "%s:%s" % (key, value)
+    for subnode in node.getchildren():
+      print "%s:%s" % (subnode.tag, subnode.text)
+
+def read_xml(text = '', xmlfile = ''):
+    root = ET.parse(xmlfile)
+    # root = ET.fromstring(text)
+
+    # 1 getiterator([tag=None])
+    # only elements whose tag equals tag are returned from the iterator
+    eitor = root.getiterator("employee")
+    for e in eitor:
+        print_node(e)
+
+# read_xml(xmlfile='/home/wac/data/zhwiki-20160203-pages-articles-multistream.xml')
+
+
+# tree = ET.ElementTree(file='/home/wac/data/zhwiki-20160203-pages-articles-multistream.xml')
 
 #得到第一个匹配country标签的Element对象
 # text = tree.find("country")
 # print text
 # for sub_tag in text:
 #         print sub_tag.text
-for elem in tree.findall('text'):
-    print elem.tag, elem.attrib
-    print elem.text
+# for elem in tree.findall('text'):
+#     print elem.tag, elem.attrib
+#     print elem.text
+
+
+
+# import xml.parsers.expat
+# parser = xml.parsers.expat.ParserCreate()
+# parser.ParseFile(open('/home/wac/data/zhwiki-20160203-pages-articles-multistream.xml', 'r'))\
+
+class MyCorpus(object):
+    def __init__(self, dictionary, docpath):
+        self.dictionary = dictionary
+        self.docpath = docpath
+    def __iter__(self):
+        # dictionary = pool.map(dictionary.doc2bow,  getFile())
+        for tfile in getFile(self.docpath):
+            yield self.dictionary.doc2bow(document=jieba.lcut(tfile))
+
+def xmlparser(xmlfile):
+    import sys
+    # import shutil
+    sys.path.append("../langconv/")
+    from langconv import *
+
+    for event, elem in ET.iterparse(xmlfile):
+        if 'text' in elem.tag:
+        # if elem.tag == '{http://www.mediawiki.org/xml/export-0.10/}text':
+            line = Converter('zh-hans').convert(elem.text).encode('utf-8')
+            yield line
+            elem.clear()
+
+if __name__ == '__main__':
+    for t in xmlparser('/home/wac/data/zhwiki-20160203-pages-articles-multistream.xml'):
+        print t
