@@ -73,9 +73,9 @@ def delNOTNeedWords(content,customstopwords=None):
 
 def load_save_word2vec_model(line_words, model_filename):
     # 模型参数
-    feature_size = 50
-    content_window = 4
-    freq_min_count = 2
+    feature_size = 500
+    content_window = 5
+    freq_min_count = 3
     # threads_num = 4
     negative = 3   #best采样使用hierarchical softmax方法(负采样，对常见词有利)，不使用negative sampling方法(对罕见词有利)。
     iter = 20
@@ -98,7 +98,7 @@ def load_save_word2vec_model(line_words, model_filename):
 
 if __name__ == '__main__':
 
-    limit = 2000 #该属性决定取wiki文件text tag前多少条，-1为所有
+    limit = -1 #该属性决定取wiki文件text tag前多少条，-1为所有
     file_name = '/home/wac/data/zhwiki-20160203-pages-articles-multistream.xml'
     wikimodel_filename = './word2vec_wiki.model'
     s_list = []

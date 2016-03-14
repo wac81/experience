@@ -92,7 +92,7 @@ def xmlparser(xmlfile):
     from langconv import *
 
     for event, elem in ET.iterparse(xmlfile):
-        if 'text' in elem.tag:
+        if 'text' in elem.tag and elem.text is not None:
         # if elem.tag == '{http://www.mediawiki.org/xml/export-0.10/}text':
             line = Converter('zh-hans').convert(elem.text).encode('utf-8')
             yield line
