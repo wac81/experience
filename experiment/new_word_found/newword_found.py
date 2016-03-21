@@ -44,7 +44,7 @@ f_ab_accuracy = sorted(f_ab_accuracy.items(), key=lambda e: e[1], reverse=True)
 # 两个字组成的数组
 maxlen = 2
 step = 1
-multiple = 20  # 默认10
+multiple = 200  # 默认10
 
 ab_chars = []
 for i in range(0, len(all_words) - maxlen, step):
@@ -56,7 +56,6 @@ for i in range(0, len(all_words) - maxlen, step):
 
 # 计算两个字出现的频率
 ab_chars_dict = nltk.FreqDist(ab_chars)
-print ab_chars_dict[u"奥冬"]
 count_ab_all = len(ab_chars)
 for x in f_ab_accuracy:
     if x[0] in ab_chars_dict.keys():
