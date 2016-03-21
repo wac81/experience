@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 
+# f(ab) 也就是词 冬奥 出现的次数 / 总字数 > （冬出现的次数/总字数 ）＊（奥出现的字数 / 总字数）＊10
 import nltk
 import codecs
 
@@ -31,10 +32,11 @@ print fdist.values()
 f_ab_accuracy = {}
 for x in fdist:
     for x2 in fdist:
-        accuracy = (float(fdist[x] * fdist[x2]) / float(count_all ^ 2))
+        accuracy = (float(fdist[x] * fdist[x2]) / float(count_all *count_all))
         f_ab_accuracy[x + x2] = accuracy
 
 f_ab_accuracy = sorted(f_ab_accuracy.items(), key=lambda e: e[1], reverse=True)
+
 
 # for x in f_ab_accuracy:
 #     print x[0], x[1]
@@ -45,10 +47,15 @@ step = 1
 
 ab_chars = []
 for i in range(0, len(all_words) - maxlen, step):
-    ab_chars.append("".join(all_words[i:i + maxlen]))
+    temp = "".join(all_words[i:i + maxlen])
+    # if temp == u'奥冬':
+    #     print temp
+    ab_chars.append(temp)
+
 
 # 计算两个字出现的频率
 ab_chars_dict = nltk.FreqDist(ab_chars)
+print ab_chars_dict[u"奥冬"]
 count_ab_all = len(ab_chars)
 for x in f_ab_accuracy:
     if x[0] in ab_chars_dict.keys():
