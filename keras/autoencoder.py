@@ -13,7 +13,9 @@ if __name__ == "__main__":
     #X_train = np.random.random((1000,  data_dim))
     #X_test = np.random.random((1000, data_dim))
     X_train = np.array([[0,0,0,1], [0,0,1,0], [0,1,0,0], [1,0,0,0]])
-    X_test = np.array([[0,0,0,6], [0,0,6,0], [0,6,0,0], [6,0,0,0]])
+    X_test = np.array([[0,0,0,1], [0,0,1,0], [0,1,0,0], [1,0,0,0]])
+    X_train = X_train.astype("float64")
+    X_test = X_test.astype("float64")
     # input shape: (nb_samples, 32)
     encoder = containers.Sequential([Dense(2, input_dim=4,activation='tanh')])
     decoder = containers.Sequential([Dense(4, input_dim=2)])
@@ -25,7 +27,7 @@ if __name__ == "__main__":
 
     # 训练autoencoder
     model.compile(optimizer='sgd', loss='mse')
-    model.fit(X_train, X_train, nb_epoch=10,batch_size=64,show_accuracy=True)
+    model.fit(X_train, X_train, nb_epoch=20,batch_size=1,show_accuracy=True)
 
     # 预测输入数据的压缩表示
     autoencoder.output_reconstruction = False  # 修改属性后，模型需要重新编译
@@ -40,4 +42,6 @@ if __name__ == "__main__":
     #再次训练原始输入数据
     autoencoder.output_reconstruction = True
     model.compile(optimizer='sgd', loss='mse')
+    representations = model.predict(X_test)
+    print representations
     model.fit(X_train, X_train, nb_epoch=10)
