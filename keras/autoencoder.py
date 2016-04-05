@@ -29,7 +29,7 @@ if __name__ == "__main__":
     # 训练autoencoder
     model.compile(optimizer='sgd', loss='mse')
 
-    model.fit(X_train, X_train, nb_epoch=30000, show_accuracy=True, batch_size=1)
+    model.fit(X_train, X_train, nb_epoch=60000, show_accuracy=True, batch_size=1)
     # model.fit(X_train, X_train, nb_epoch=10)
 
     representations = model.predict(X_train)

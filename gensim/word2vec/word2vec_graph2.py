@@ -44,7 +44,7 @@ class MySentences(object):
 
 if __name__ == '__main__':
 
-    file_name = "./koubei_50w.json"
+    file_name = "/home/wac/data/autohome_forum_200w_0318.json"
     save_model = "./word2vec.model"
     save_model2 = "./word2vec.model.txt"
     # s_list, vocab, word_idx = txt2list(file_name, return_mod=3, is_filter=True)
