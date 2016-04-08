@@ -12,13 +12,17 @@ if __name__ == "__main__":
 
     #X_train = np.random.random((1000,  data_dim))
     #X_test = np.random.random((1000, data_dim))
-    X_train = np.array([[1,0,0,0], [0,1,0,0],[0,0,1,0], [0,0,0,1]])
-    X_test = np.array([[1,0,0,0], [0,1,0,0], [0,0,1,0], [0,0,0,1]])
+    # X_train = np.array([[1,0,0,0], [0,1,0,0],[0,0,1,0], [0,0,0,1]])
+    # X_test = np.array([[1,0,0,0], [0,1,0,0], [0,0,1,0], [0,0,0,1]])
+
+    X_train = np.array([[1,0,0,0,0,0], [0,1,0,0,0,0],[0,0,1,0,0,0], [0,0,0,1,0,0],[0,0,0,0,1,0],[0,0,0,0,0,1]])
+    X_test = np.array([[1,0,0,0,0,0], [0,1,0,0,0,0],[0,0,1,0,0,0], [0,0,0,1,0,0],[0,0,0,0,1,0],[0,0,0,0,0,1]])
     # X_train = X_train.astype("float32")
     # X_test = X_test.astype("float32")
     # input shape: (nb_samples, 32)
-    encoder = containers.Sequential([Dense(2, input_dim=4, activation='sigmoid')])
-    decoder = containers.Sequential([Dense(4, input_dim=2, activation='sigmoid')])
+    encoder = containers.Sequential([Dense(4, input_dim=6),Dense(2, input_dim=4, activation='sigmoid')])
+
+    decoder = containers.Sequential([Dense(4, input_dim=2),Dense(6, input_dim=4, activation='sigmoid')])
 
     #output_reconstruction参数为True,则dim(input) = dim(output)
     autoencoder = AutoEncoder(encoder=encoder, decoder=decoder, output_reconstruction=True)
@@ -29,7 +33,7 @@ if __name__ == "__main__":
     # 训练autoencoder
     model.compile(optimizer='sgd', loss='mse')
 
-    model.fit(X_train, X_train, nb_epoch=60000, show_accuracy=True, batch_size=1)
+    model.fit(X_train, X_train, nb_epoch=25000, show_accuracy=True, batch_size=1)
     # model.fit(X_train, X_train, nb_epoch=10)
 
     representations = model.predict(X_train)
