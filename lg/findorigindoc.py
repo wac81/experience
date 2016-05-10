@@ -26,9 +26,9 @@ documents = [
 
 # messagefile = './message_liuxiaolingtong.json'   #message文件位置
 # messagefile = './weibo.json'   #message文件位置
-messagefile = '/home/wac/data/hotWeibo_9200.json'
+messagefile = '/home/wac/data2/Infiniti_0510.json'
 similarity_limit = 0.7   #相似度下限
-
+after_date = 201603000000  #这个日期之后, 到分钟
 reposts_limit = 0 #转发下限
 #input文本
 # input = [u'《沁园春·买票》：“春节又到，中华大地，有钱飞机，没钱站票。望长城内外，大包小包。大河上下，民工滔滔。早起晚睡，达旦通宵，欲与票贩试比高。须钞票。看人山人海，一票难保。车票如此难搞，引无数英雄竞折腰。昔秦皇汉武，见此遁逃；唐宗宋祖，更是没招！一代天骄，成吉思汗，只好骑马往回飙。',u'20797',u'201601281702']
@@ -67,7 +67,8 @@ def delNOTNeedWords(content,customstopwords=None):
 
     for word, flag in words:
         # print word.encode('utf-8')
-        if (word not in customstopwords and flag[0] in  [u'n', u'f', u'a', u'd',u'z']):
+        if (word not in customstopwords and flag[0]):
+        # in  [u'n', u'f', u'a', u'd',u'z']):
             # ["/x","/zg","/uj","/ul","/e","/d","/uz","/y"]): #去停用词和其他词性，比如非名词动词等
             result += word.encode('utf-8')  # +"/"+str(w.flag)+" "  #去停用词
     return result
@@ -105,7 +106,7 @@ for d in sort_sims:
     if "tC" in documents[d[0]].keys() and documents[d[0]]["tC"]!=None and "$date" in documents[d[0]]["tC"].keys():
             valuecount = valuecount + 1
             if (d[1]>=similarity_limit and documents[d[0]]["reposts"]>=reposts_limit):
-                if convert_time(documents[d[0]]["tC"]["$date"])>201600000000:
+                if convert_time(documents[d[0]]["tC"]["$date"])>after_date:
                     output.append(documents[d[0]])
                     valuecounts.append(float(valuecount))
                     valuecount = 0
@@ -117,7 +118,7 @@ x_date = []
 for item in output_date:
     print(item["content"].encode("utf-8")+" "+ str(item["reposts"])+" "+item["tC"]["$date"].encode("utf-8"))
     x_reposts.append(float(item["reposts"]))
-    x_date.append(convert_time(item["tC"]["$date"]))
+    x_date.append(convert_time(item["tC"]["$date"])-after_date)
 
 y = x_reposts
 x = x_date
@@ -128,7 +129,7 @@ plt.figure()
 plt.plot(x,y,color="red",linewidth=2)
 print (valuecounts,len(x),len(valuecounts))
 plt.plot(x,valuecounts,"b--",label="$cos(x^2)$",color="green")
-plt.xlabel("Time(s)")
+plt.xlabel("Time(s) from: "+str(after_date))
 plt.ylabel("Reposts")
 plt.title("find origin content")
 # plt.ylim(-1.2,1.2)
