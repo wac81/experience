@@ -26,7 +26,7 @@ if __name__ == "__main__":
 
     #output_reconstruction参数为True,则dim(input) = dim(output)
     autoencoder = AutoEncoder(encoder=encoder, decoder=decoder, output_reconstruction=True)
-    # print autoencoder.get_output()
+    # print autoencoder.get_output()1
     model = models.Sequential()
     model.add(autoencoder)
 
