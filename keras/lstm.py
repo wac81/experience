@@ -22,7 +22,7 @@ import codecs
 # text = open(path).read().lower()
 
 
-text = codecs.open(u"sgqss.txt", encoding='gbk').read()
+text = codecs.open(u"唐诗三百首.txt", encoding='utf8').read()
 print('corpus length:', len(text))
 
 chars = set(text)
@@ -31,8 +31,8 @@ char_indices = dict((c, i) for i, c in enumerate(chars))
 indices_char = dict((i, c) for i, c in enumerate(chars))
 
 # cut the text in semi-redundant sequences of maxlen characters
-maxlen = 12
-step = 3
+maxlen = 5
+step = 1
 sentences = []
 next_chars = []
 for i in range(0, len(text) - maxlen, step):

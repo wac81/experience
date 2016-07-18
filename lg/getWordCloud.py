@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from gensim import corpora, models, similarities
 import logging
 import jieba
