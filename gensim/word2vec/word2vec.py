@@ -132,7 +132,7 @@ bigram_transformer = models.Phrases(input)
 model = models.Word2Vec(bigram_transformer[input], size=feature_size, window=content_window, min_count=freq_min_count, negative=negative, iter=iter, workers=multiprocessing.cpu_count())
 # print model.index2word
 model.save(save_filename)
-f = model.most_similar([u'奥迪'])
+f = model.most_similar([u'宝马'])
 for k in f:
     print k[0].encode('utf-8'),k[1]
 
