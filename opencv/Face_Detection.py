@@ -1,10 +1,14 @@
 import cv2
 import sys
 
-cascPath = "haarcascade_frontalface_default.xml"
+cascPath = "haarcascade_frontalface_alt.xml"
+# cascPath = "lbpcascade_frontalface.xml"
+# cascPath = "haarcascade_smile.xml"
 faceCascade = cv2.CascadeClassifier(cascPath)
 
 video_capture = cv2.VideoCapture(0)
+video_capture.set(3, 640)
+video_capture.set(4, 480)
 
 while True:
     # Capture frame-by-frame
@@ -15,15 +19,16 @@ while True:
     faces = faceCascade.detectMultiScale(
         gray,
         scaleFactor=1.3,
-        minNeighbors=5,
+        minNeighbors=6,
         # minSize=(30, 30),
 
-        flags=cv2.cv.CV_HAAR_SCALE_IMAGE
+        # flags=cv2.cv.CV_HAAR_SCALE_IMAGE
     )
 
     # Draw a rectangle around the faces
     for (x, y, w, h) in faces:
         cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+
 
     # Display the resulting frame
     cv2.imshow('Video', frame)
