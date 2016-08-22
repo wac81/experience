@@ -5,7 +5,7 @@ import os
 import numpy as np
 
 similar = 0.8  # 确定相似度，大于此数值的图片说明重复，删掉
-images_path = './img_erotic/train/adult/'
+images_path = '/media/wac/a74b0c6a-d07e-4a3f-b9b8-8796e932fce5/cornetto/'
 
 def mse(imageA, imageB):
 	# the 'Mean Squared Error' between the two images is the
@@ -63,7 +63,7 @@ for image_path in images_path:
         # img_in_height = np.size(img_in, 0)
         # img_in_width = np.size(img_in, 1)
 
-        if (img.shape is not None and img_in.shape is not None and img.shape == img_in.shape):  #尺寸一样才比对
+        if (img is not None and img.shape is not None and img_in.shape is not None and img.shape == img_in.shape):  #尺寸一样才比对
             m,s = Compare_images(imageA=img,imageB=img_in)
             if (s>similar and image_path != image_path_in):   #大于此数值，文件名不相同的图片说明重复，删掉
                     print s,image_path,image_path_in
