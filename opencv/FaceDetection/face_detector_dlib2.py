@@ -17,7 +17,7 @@ class NoFaces(Exception):
     pass
 
 
-im = cv2.imread("/2.jpg")
+im = cv2.imread("images-7.jpg")
 
 # 3.使用detector进行人脸检测 rects为返回的结果
 rects = detector(im, 1)
