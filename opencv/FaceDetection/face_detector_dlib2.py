@@ -4,7 +4,7 @@ import dlib
 import numpy
 import sys
 
-PREDICTOR_PATH = "/shape_predictor_68_face_landmarks.dat"
+PREDICTOR_PATH = "shape_predictor_68_face_landmarks.dat"
 
 # 1.使用dlib自带的frontal_face_detector作为我们的人脸提取器
 detector = dlib.get_frontal_face_detector()
@@ -17,7 +17,7 @@ class NoFaces(Exception):
     pass
 
 
-im = cv2.imread("images-7.jpg")
+im = cv2.imread("images-9.jpg")
 
 # 3.使用detector进行人脸检测 rects为返回的结果
 rects = detector(im, 1)

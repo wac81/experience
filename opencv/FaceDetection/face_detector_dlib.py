@@ -75,9 +75,11 @@ for f in sys.argv[1:]:
 # where a negative value will return more detections and a positive value fewer.
 # Also, the idx tells you which of the face sub-detectors matched.  This can be
 # used to broadly identify faces in different orientations.
-if (len(sys.argv[1:]) > 0):
-    img = io.imread(sys.argv[1])
-    dets, scores, idx = detector.run(img, 1, -1)
-    for i, d in enumerate(dets):
-        print("Detection {}, score: {}, face_type:{}".format(
-            d, scores[i], idx[i]))
+# if (len(sys.argv[1:]) > 0):
+# img = io.imread(sys.argv[1])
+img = io.imread("images-8.jpg")
+
+dets, scores, idx = detector.run(img, 1, -1)
+for i, d in enumerate(dets):
+    print("Detection {}, score: {}, face_type:{}".format(
+        d, scores[i], idx[i]))
