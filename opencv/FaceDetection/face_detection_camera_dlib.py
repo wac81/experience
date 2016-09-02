@@ -1,5 +1,6 @@
 import cv2
-
+import dlib
+detector = dlib.get_frontal_face_detector()
 
 cascPath = "haarcascade_frontalface_alt.xml"
 # cascPath = "lbpcascade_frontalface.xml"
@@ -15,19 +16,20 @@ while True:
     ret, frame = video_capture.read()
 
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-
-    faces = faceCascade.detectMultiScale(
-        gray,
-        scaleFactor=1.06,
-        minNeighbors=8,
-        # minSize=(30, 30),
-
-        # flags=cv2.cv.CV_HAAR_SCALE_IMAGE
-    )
+    dets = detector(gray, 1)
+    # faces = faceCascade.detectMultiScale(
+    #     gray,
+    #     scaleFactor=1.06,
+    #     minNeighbors=8,
+    #     # minSize=(30, 30),
+    #
+    #     # flags=cv2.cv.CV_HAAR_SCALE_IMAGE
+    # )
 
     # Draw a rectangle around the faces
-    for (x, y, w, h) in faces:
-        cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
+    # for (x, y, w, h) in faces:
+    for i, d in enumerate(dets):
+        cv2.rectangle(frame, (d.left(), d.top()), (d.right(), d.bottom()), (0, 255, 0), 2)
 
 
     # Display the resulting frame
