@@ -1,4 +1,7 @@
 #coding=utf8
+'''
+广发证券必须安装pytesseract，用于验证
+'''
 import easytrader
 import os
 import json
