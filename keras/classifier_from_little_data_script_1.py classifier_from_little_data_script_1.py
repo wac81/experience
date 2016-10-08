@@ -46,7 +46,7 @@ from keras.layers import Activation, Dropout, Flatten, Dense
 img_width, img_height = 150, 150
 
 train_data_dir = 'data/train'
-validation_data_dir = 'data/validation'
+validation_data_dir = 'data/val'
 nb_train_samples = 2000
 nb_validation_samples = 800
 nb_epoch = 50
