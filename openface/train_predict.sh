@@ -1,5 +1,5 @@
-#首先，进行姿势检测和校准：
-./util/align-dlib.py ./training-images/ align outerEyesAndNose ./aligned-images/ --size 96
+#首先，进行姿势检测和校准,8进程：
+for N in {1..8};do ./util/align-dlib.py ./training-images/ align outerEyesAndNose ./aligned-images/ --size 96 & done
 #这将创建一个新./aligned-images/子文件夹，带有每一个测试图像的裁剪过的并且对齐的版本。
 
 
