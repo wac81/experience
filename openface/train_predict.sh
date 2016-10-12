@@ -9,7 +9,7 @@ for N in {1..8};do ./util/align-dlib.py ./training-images/ align outerEyesAndNos
 
 
 #第三，训练自己的面部检测模型：
-./demos/classifier.py train ./generated-embeddings/ --classifier RadialSvm
+./demos/classifier.py train ./generated-embeddings --classifier RadialSvm
 #这将产生名为./generated-embeddings/classifier.pkl的新文件名。这个文件有你将用来识别新面部的 SVM 模型。
 #./demos/classifier.py train ./generated-embeddings/ --classifier RadialSvm
 
