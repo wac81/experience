@@ -16,3 +16,15 @@ for N in {1..8};do ./util/align-dlib.py ./training-images/ align outerEyesAndNos
 
 #predict images
 ./demos/classifier.py infer ./generated-embeddings/classifier.pkl your_test_image.jpg
+
+
+        choices=[
+            'LinearSvm',
+            'GridSearchSvm',
+            'GMM',
+            'RadialSvm',
+            'DecisionTree',
+            'GaussianNB',
+            'DBN'],
+        help='The type of classifier to use.',
+        default='LinearSvm')
