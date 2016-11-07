@@ -17,7 +17,7 @@ class NoFaces(Exception):
     pass
 
 
-im = cv2.imread("web-1.jpg")
+im = cv2.imread("web-2.jpg")
 
 # 3.使用detector进行人脸检测 rects为返回的结果
 rects = detector(im, 1)
@@ -44,7 +44,7 @@ for i in range(len(rects)):
 
         # color=(0,0,255))
         # 6.绘制特征点
-        cv2.circle(im, pos, 3, color=(0, 255, 0))
+        cv2.circle(im, pos, 3, color=(232, 255, 100))
 
 cv2.namedWindow("im", 2)
 cv2.imshow("im", im)

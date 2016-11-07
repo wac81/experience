@@ -1,6 +1,6 @@
 import cv2
 cascPath = "haarcascade_frontalface_alt.xml"
-imagePath = "./images-10.jpg"
+imagePath = "./images-8.jpg"
 faceCascade = cv2.CascadeClassifier(cascPath)
 
 # Read the image
