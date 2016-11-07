@@ -27,29 +27,6 @@ logging.root.setLevel(level=logging.INFO)
 # logger.info("running %s" % ' '.join(sys.argv))
 
 
-def json_dict_from_file(json_file,fieldnames=None,isdelwords=True):
-    """
-    load json file and generate a new object instance whose __name__ filed
-    will be 'inst'
-    :param json_file:
-    """
-    obj_s = []
-    with open(json_file) as f:
-        for line in f:
-            object_dict = json.loads(line)
-            if fieldnames==None:
-                obj_s.append(object_dict)
-            else:
-                # for fieldname in fieldname:
-                    if set(fieldnames).issubset(set(object_dict.keys())):
-                        one = []
-                        for fieldname in fieldnames:
-                            if isdelwords and fieldname == 'content':
-                                one.append(delNOTNeedWords(object_dict[fieldname])[1])
-                            else:
-                                one.append(object_dict[fieldname])
-                        obj_s.append(one)
-    return obj_s
 def delNOTNeedWords(content,customstopwords=None):
     # words = jieba.lcut(content)
     if customstopwords == None:
@@ -79,7 +56,7 @@ def delNOTNeedWords(content,customstopwords=None):
 
 def get_save_wikitext(wiki_filename,text_filename):
     output = open(text_filename, 'w')
-    wiki = corpora.WikiCorpus(text_filename, lemmatize=False, dictionary={})
+    wiki = corpora.WikiCorpus(wiki_filename, lemmatize=False, dictionary={})
     for text in wiki.get_texts():
         # text = delNOTNeedWords(text,"../../stopwords.txt")[1]
         output.write(" ".join(text) + "\n")
@@ -116,21 +93,21 @@ def load_save_word2vec_model(line_words, model_filename):
 if __name__ == '__main__':
 
     limit = -1 #该属性决定取wiki文件text tag前多少条，-1为所有
-    wiki_filename = '/home/wac/data/zhwiki-20160203-pages-articles-multistream.xml'
+    wiki_filename = './zhwiki-20160203-pages-articles-multistream.xml.bz2'
     wiki_text = './wiki_text.txt'
     wikimodel_filename = './word2vec_wiki.model'
     s_list = []
 
-    # get_save_wikitext(wiki_filename,wiki_text)
+    get_save_wikitext(wiki_filename,wiki_text)
 
 
-    # for i,text in enumerate(open(wiki_text, 'r')):
-    #     s_list.append(delNOTNeedWords(text,"../../stopwords.txt")[1])
-    #     print(i)
-    #
-    #     if i==limit: #取前limit条,-1为所有
-    #         break
-    #
+    for i,text in enumerate(open(wiki_text, 'r')):
+        s_list.append(delNOTNeedWords(text,"../../stopwords.txt")[1])
+        print(i)
+
+        if i==limit: #取前limit条,-1为所有
+            break
+
     #计算模型
     model = load_save_word2vec_model(s_list,wikimodel_filename)
 

@@ -1,3 +1,4 @@
+#coding=utf8
 # 去停用词
 
 import codecs
