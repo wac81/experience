@@ -4,7 +4,7 @@ import dlib
 import numpy
 import sys
 
-PREDICTOR_PATH = "shape_predictor_68_face_landmarks.dat"
+PREDICTOR_PATH = "shape_predictor_68_face_landmarks.data"
 
 # 1.使用dlib自带的frontal_face_detector作为我们的人脸提取器
 detector = dlib.get_frontal_face_detector()
