@@ -37,7 +37,7 @@ data/
 '''
 
 from keras.preprocessing.image import ImageDataGenerator
-from keras.models import Sequential
+from keras.models import Sequential,Model
 from keras.layers import Convolution2D, MaxPooling2D
 from keras.layers import Activation, Dropout, Flatten, Dense
 
@@ -47,9 +47,9 @@ img_width, img_height = 150, 150
 
 train_data_dir = 'data/train'
 validation_data_dir = 'data/validation'
-nb_train_samples = 2000
-nb_validation_samples = 800
-nb_epoch = 50
+nb_train_samples = 200
+nb_validation_samples = 80
+nb_epoch = 5
 
 
 model = Sequential()
@@ -69,6 +69,7 @@ model.add(Flatten())
 model.add(Dense(64))
 model.add(Activation('relu'))
 model.add(Dropout(0.5))
+
 model.add(Dense(1))
 model.add(Activation('sigmoid'))
 
@@ -105,5 +106,27 @@ model.fit_generator(
         nb_epoch=nb_epoch,
         validation_data=validation_generator,
         nb_val_samples=nb_validation_samples)
+#
+import keras.preprocessing.image as img
+test_img = img.load_img('1.jpg', [img_height, img_width])
+X = img.img_to_array(test_img)
+# print model.predict(X)
+
+from keras import backend as K
+
+get_layer_output = K.function([model.layers[0].input],[model.layers[0].output])
+                              # [model.layers[3].output])
+import numpy as np
+# layer_output = get_layer_output([np.insert(X, X.shape[1], values=np.zeros(X.shape[0]), axis=1)])[0]
+layer_output = get_layer_output([np.array([X, np.zeros(X.shape)])])[0]
+print model.get_output_at(1)
+
+model_file = "first_try.model"
+model_weight = "first_try.h5"
+json_str = model.to_json()
+with open(model_file, 'w') as fp:
+    fp.write(json_str)
+model.save_weights(model_weight)
+
 
 model.load_weights('first_try.h5')
