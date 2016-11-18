@@ -26,15 +26,15 @@ ses = SignatureES(es)
 # ses.add_image('http://pic13.997788.com/pic_search/00/26/88/70/se26887098.jpg')
 
 
-k = ses.search_image('http://gdgs.chinaxinge.com/uploadfile/200812/20081224234731808.jpg')
-
-print k
+# k = ses.search_image('http://gdgs.chinaxinge.com/uploadfile/200812/20081224234731808.jpg')
+#
+# print k
 
 
 # ses.add_image('http://life.gd.sina.com.cn/ul/2008/1126/U1425P697DT20081126183443.jpg')
 # # ses.add_image('http://i3.s2.dpfile.com/2010-11-15/5838770_b.jpg%28240c180%29/thumb.jpg')
 # print ses.search_image('http://www.chinapp.com/uploadfile/2014/1113/20141113111459375.jpg')
-# print ses.search_image('./image_database/7.jpg')
+print ses.search_image('./image_database/3.jpg')
 
 
 # print ses.search_image('https://upload.wikimedia.org/wikipedia/commons/e/e0/Caravaggio_-_Cena_in_Emmaus.jpg')

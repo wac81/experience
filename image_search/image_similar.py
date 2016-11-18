@@ -4,6 +4,8 @@ a = gis.generate_signature('http://d.hiphotos.baidu.com/image/pic/item/3bf33a87e
 b = gis.generate_signature('http://g.hiphotos.baidu.com/image/pic/item/83025aafa40f4bfb4dc7986d0a4f78f0f73618f7.jpg')
 c = gis.generate_signature('http://g.hiphotos.baidu.com/image/pic/item/83025aafa40f4bfb4dc7986d0a4f78f0f73618f7.jpg')
 d = gis.generate_signature('http://g.hiphotos.baidu.com/image/pic/item/83025aafa40f4bfb4dc7986d0a4f78f0f73618f7.jpg')
-similar = gis.normalized_distance(a, b)
+a = gis.generate_signature('./image_database/5.jpg')
+b = gis.generate_signature('./image_database/6.jpg')
+similar = gis.normalized_distance(d, b)
 
 print a, b, similar
