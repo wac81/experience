@@ -13,6 +13,9 @@ from __future__ import print_function
 from keras.models import Sequential
 from keras.layers.core import Dense, Activation, Dropout
 from keras.layers.recurrent import LSTM
+
+from keras.optimizers import RMSprop
+
 from keras.datasets.data_utils import get_file
 import numpy as np
 import random
@@ -58,8 +61,8 @@ model.add(LSTM(1024, return_sequences=False))
 model.add(Dropout(0.2))
 model.add(Dense(len(chars)))
 model.add(Activation('softmax'))
-
-model.compile(loss='categorical_crossentropy', optimizer='rmsprop')
+optimizer = RMSprop(lr=0.01)
+model.compile(loss='categorical_crossentropy', optimizer=optimizer)
 
 
 def sample(preds, temperature=1.0):
@@ -80,7 +83,7 @@ for iteration in range(1, 100):
 
     start_index = random.randint(0, len(text) - maxlen - 1)
 
-    for diversity in [0.2, 0.5, 0.8]:
+    for diversity in [0.2, 0.5, 0.8, 1.0, 1.2]:
         print()
         print('----- diversity:', diversity)
 
