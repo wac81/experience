@@ -80,7 +80,7 @@ def sentiment(input_text):
                     nega_score += dict_word_score[curr_word] + dict_word_score[curr_word] * math.log(word_count - 0.9)
     return sentiment_acc_score
 
-novelName = 'data/lianguoliusheng'
+novelName = 'data/yanzhiyoudu'
 listSentence = []
 i = 0
 for line in codecs.open(novelName + '.txt','r','utf-8').readlines():
