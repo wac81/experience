@@ -35,12 +35,13 @@ data/
             ...
 ```
 '''
-
+# -*- coding:utf-8 -*-
 from keras.preprocessing.image import ImageDataGenerator
 from keras.models import Sequential
 from keras.layers import Convolution2D, MaxPooling2D
 from keras.layers import Activation, Dropout, Flatten, Dense
-
+from keras import backend as K
+K.set_image_dim_ordering('th')
 
 # dimensions of our images.
 img_width, img_height = 150, 150
