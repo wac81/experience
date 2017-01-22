@@ -8,7 +8,7 @@ cascPath = "haarcascade_frontalface_alt.xml"
 faceCascade = cv2.CascadeClassifier(cascPath)
 
 video_capture = cv2.VideoCapture(0)
-video_capture1 = cv2.VideoCapture(1)
+# video_capture1 = cv2.VideoCapture(1)
 # video_capture.set(3, 640)
 # video_capture.set(4, 480)
 video_capture.set(3, 1280)
@@ -22,8 +22,8 @@ face_fx = face_fy = 0.33
 while True:
     # Capture frame-by-frame
     ret, frame = video_capture.read()
-    ret1, frame1 = video_capture1.read()
-    cv2.imshow('Video2', frame1)
+    # ret1, frame1 = video_capture1.read()
+    # cv2.imshow('Video2', frame1)
 
 
     # faces = faceCascade.detectMultiScale(
