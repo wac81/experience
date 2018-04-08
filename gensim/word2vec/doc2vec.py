@@ -1,10 +1,11 @@
 # -*- coding:utf-8 -*-
 from gensim import models
 # gensim .models.Word2Vec
-import jieba
+import jieba, gensim
 import multiprocessing
 from gensim.models.doc2vec import LabeledSentence
 from gensim.models import Doc2Vec
+TaggededDocument = gensim.models.doc2vec.TaggedDocument
 
 save_filename = 'doc2vec.model'
 sentences = [
@@ -126,18 +127,15 @@ def delNOTNeedWords(content,stopwords):
             result += word.encode('utf-8')  # +"/"+str(w.flag)+" "  #去停用词
     return result
 
-input = []
-labels=[]
-uid = 1
-for sentence in sentences:
-    sentence = delNOTNeedWords(sentence,stopwords)
-    input.append(jieba.lcut(sentence))
-    labels.append('SENT_%s' % uid)
-    uid = uid + 1
-
-
-
-documents = LabeledSentence(words=input, labels=labels)
+documents = []
+# y = np.concatenate(np.ones(len(docs)))
+for i, text in enumerate(sentences):
+    # word_list = text.split(' ')
+    text = delNOTNeedWords(text, stopwords)
+    word_list = jieba.lcut(text)
+    l = len(word_list)
+    document = TaggededDocument(word_list, tags=[i])
+    documents.append(document)
 
 
 # bigram_transformer = models.Phrases(input)
