@@ -49,7 +49,7 @@ def run_Map():
 if __name__ == '__main__':
     run()
     start = time.time()
-    #for i in range(1000):
-    #	run_WAC()
-    #print(time.time() - start)
+    for i in range(1000):
+        run_WAC()
+    print(time.time() - start)
     run_Map()
