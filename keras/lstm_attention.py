@@ -1,12 +1,7 @@
 # -*- coding:utf-8 -*-
 
-'''Example script to generate text from Nietzsche's writings.
-At least 20 epochs are required before the generated text
-starts sounding coherent.
-It is recommended to run this script on GPU, as recurrent
-networks are quite computationally intensive.
-If you try this script on new data, make sure your corpus
-has at least ~100k characters. ~1M is better.
+'''
+https://kexue.fm/archives/4765
 '''
 
 from __future__ import print_function
@@ -15,13 +10,18 @@ from keras.layers.core import Dense, Activation, Dropout
 from keras.layers.recurrent import LSTM
 
 from keras.optimizers import RMSprop
-
+import sys
+sys.path.append('..')
+# import mod1
+from attention.attention_keras import *
 import numpy as np
 import random
 import sys
 import codecs
 # path = get_file('nietzsche.txt', origin="https://s3.amazonaws.com/text-datasets/nietzsche.txt")
 # text = open(path).read().lower()
+from keras.models import Model
+from keras.layers import *
 
 
 text = codecs.open(u"唐诗三百首.txt", encoding='utf8').read()
@@ -33,7 +33,7 @@ char_indices = dict((c, i) for i, c in enumerate(chars))
 indices_char = dict((i, c) for i, c in enumerate(chars))
 
 # cut the text in semi-redundant sequences of maxlen characters
-maxlen = 16
+maxlen = 8
 step = 1
 sentences = []
 next_chars = []
@@ -43,24 +43,34 @@ for i in range(0, len(text) - maxlen, step):
 print('nb sequences:', len(sentences))
 
 print('Vectorization...')
-X = np.zeros((len(sentences), maxlen, len(chars)), dtype=np.bool)
+X = np.zeros((len(sentences), maxlen), dtype=np.int16)
 y = np.zeros((len(sentences), len(chars)), dtype=np.bool)
 for i, sentence in enumerate(sentences):
     for t, char in enumerate(sentence):
-        X[i, t, char_indices[char]] = 1
+        X[i, t] = char_indices[char]
     y[i, char_indices[next_chars[i]]] = 1
 
 
 # build the model: 2 stacked LSTM
 print('Build model...')
-model = Sequential()
-model.add(LSTM(1024, return_sequences=True, input_shape=(maxlen, len(chars))))
-model.add(Dropout(0.2))
-model.add(LSTM(1024, return_sequences=False))
-model.add(Dropout(0.2))
-model.add(Dense(len(chars)))
-model.add(Activation('softmax'))
+# model = Sequential()
+S_inputs = Input(shape=(None, ), dtype='int16')
+embeddings = Embedding(len(chars), maxlen)(S_inputs)
+# model.add(LSTM(1024, return_sequences=True, input_shape=(maxlen, len(chars))))
+lstm = LSTM(1024, return_sequences=True)(embeddings)
+O_seq = Attention(8, 16)([lstm, embeddings, embeddings])
+O_seq = Dropout(0.2)(lstm)
+O_seq = LSTM(1024, return_sequences=False)(O_seq)
+O_seq = Dense(len(chars))(O_seq)
+outputs = Activation('softmax')(O_seq)
+# model.add(Dropout(0.2))
+# model.add(LSTM(1024, return_sequences=False))
+# model.add(Dropout(0.2))
+# model.add(Dense(len(chars)))
+# model.add(Activation('softmax'))
+model = Model(inputs=S_inputs, outputs=outputs)
 optimizer = RMSprop(lr=0.01)
+
 model.compile(loss='categorical_crossentropy', optimizer=optimizer)
 
 
@@ -92,12 +102,12 @@ for iteration in range(1, 100):
         print('----- Generating with seed: "' + sentence + '"')
         sys.stdout.write(generated)
 
-        for i in range(400):
+        for i in range(100):
             x = np.zeros((1, maxlen, len(chars)))
             for t, char in enumerate(sentence):
                 x[0, t, char_indices[char]] = 1.
 
-            preds = model.predict(x, verbose=0)[0]
+            preds = model.predict(x[0], verbose=0)[0]
             next_index = sample(preds, diversity)
             next_char = indices_char[next_index]
 

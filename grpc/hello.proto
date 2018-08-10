@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package hello;
+
+// The greeting service definition.
+service Greeter {
+  // Sends a greeting
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+  rpc WacSayHello (HelloRequest) returns (HelloReply) {}
+  rpc MapSayHello (HelloRequest) returns (HelloReply_map) {}
+
+}
+
+// The request message containing the user's name.
+message HelloRequest {
+  string name = 1;
+}
+
+// The response message containing the greetings
+message HelloReply {
+  string message = 1;
+}
+
+message HelloReply_map {
+  map<string, string> dict_map = 1;
+}
